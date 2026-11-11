@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#D9E5D6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#352208" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#272727" media="(prefers-color-scheme: dark)">
 <title>Pour Score</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,16 +28,16 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme: dark;
-    --bg:#352208; --surface:#352208; --surface-2:#42300F; --ink:#D9E5D6; --ink-2:#BFB394;
-    --line:#5F4A27; --amber:#F28E1C; --amber-ink:#F7A949; --amber-soft:#4D2E0C; --foam:#F7F3E6;
-    --good:#7DC583; --bad:#F27D6C; --frost:#4B3615; --glass:#8F8466; --grid:rgba(217,229,214,.05);
+    --bg:#272727; --surface:#272727; --surface-2:#323232; --ink:#D9E5D6; --ink-2:#AEB8AB;
+    --line:#454545; --amber:#F28E1C; --amber-ink:#F7A949; --amber-soft:#4A3216; --foam:#F5F3EC;
+    --good:#7DC583; --bad:#F27D6C; --frost:#3A3A3A; --glass:#8A8A82; --grid:rgba(217,229,214,.04);
   }
 }
 :root[data-theme="dark"]{
   color-scheme: dark;
-  --bg:#352208; --surface:#352208; --surface-2:#42300F; --ink:#D9E5D6; --ink-2:#BFB394;
-  --line:#5F4A27; --amber:#F28E1C; --amber-ink:#F7A949; --amber-soft:#4D2E0C; --foam:#F7F3E6;
-  --good:#7DC583; --bad:#F27D6C; --frost:#4B3615; --glass:#8F8466; --grid:rgba(217,229,214,.05);
+  --bg:#272727; --surface:#272727; --surface-2:#323232; --ink:#D9E5D6; --ink-2:#AEB8AB;
+  --line:#454545; --amber:#F28E1C; --amber-ink:#F7A949; --amber-soft:#4A3216; --foam:#F5F3EC;
+  --good:#7DC583; --bad:#F27D6C; --frost:#3A3A3A; --glass:#8A8A82; --grid:rgba(217,229,214,.04);
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -276,8 +276,8 @@ ol.ranked li::before{content:counter(r);font-family:var(--display);font-weight:8
 .seg button small{font-weight:500;opacity:.8}
 .seg button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 :root{--wall:#CBD9C7;--plank:#685634;--plank-2:#4E4026}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--wall:#2A1B06;--plank:#685634;--plank-2:#4E4026}}
-:root[data-theme="dark"]{--wall:#2A1B06;--plank:#685634;--plank-2:#4E4026}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--wall:#1E1E1E;--plank:#685634;--plank-2:#4E4026}}
+:root[data-theme="dark"]{--wall:#1E1E1E;--plank:#685634;--plank-2:#4E4026}
 .shelf{--row:86px;display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));grid-auto-rows:var(--row);min-height:calc(var(--row) * var(--rows));
   padding:0 12px;border-radius:14px;background-color:var(--wall);
   background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--row) - 10px),var(--plank) calc(var(--row) - 10px),var(--plank) calc(var(--row) - 4px),var(--plank-2) calc(var(--row) - 4px),var(--plank-2) var(--row));
