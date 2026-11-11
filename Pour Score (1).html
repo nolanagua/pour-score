@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pour Score</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#D9E5D6; --surface:#F3F7F1; --surface-2:#E7EEE4; --ink:#352208; --ink-2:#685634;
+  --line:#B7C6B2; --amber:#F28E1C; --amber-ink:#9A5208; --amber-soft:#FAD3A0; --foam:#FFFDF5;
+  --good:#2F6B35; --bad:#A3261C; --frost:#EEF3EC; --glass:#8F8466; --grid:rgba(53,34,8,.06);
+  --on-amber:#352208;
+  --display:"Big Shoulders Display","Arial Narrow","Roboto Condensed",Impact,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --math:"STIX Two Text","Cambria Math",Cambria,"Times New Roman",serif;
+  --nav-h:64px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#352208; --surface:#402B0E; --surface-2:#4B3615; --ink:#D9E5D6; --ink-2:#BFB394;
+    --line:#5F4A27; --amber:#F28E1C; --amber-ink:#F7A949; --amber-soft:#4D2E0C; --foam:#F7F3E6;
+    --good:#7DC583; --bad:#F27D6C; --frost:#4B3615; --glass:#8F8466; --grid:rgba(217,229,214,.05);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#352208; --surface:#402B0E; --surface-2:#4B3615; --ink:#D9E5D6; --ink-2:#BFB394;
+  --line:#5F4A27; --amber:#F28E1C; --amber-ink:#F7A949; --amber-soft:#4D2E0C; --foam:#F7F3E6;
+  --good:#7DC583; --bad:#F27D6C; --frost:#4B3615; --glass:#8F8466; --grid:rgba(217,229,214,.05);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font:17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+img,svg{max-width:100%}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+[hidden]{display:none !important}
+
+/* math type */
+.m,.eqn i,.mathblock i{font-family:var(--math);font-style:italic}
+.mr{font-family:var(--math);font-style:normal}
+.ov{text-decoration:overline;text-decoration-thickness:1.5px}
+.sym{font-family:var(--math);font-style:italic;font-size:1.25em;color:var(--amber-ink);margin-right:.4em;font-weight:400}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;line-height:1.25}
+.frac > span:first-child{border-bottom:1.5px solid currentColor;padding:0 .3em .12em}
+.frac > span:last-child{padding:.12em .3em 0}
+.int{display:inline-flex;align-items:center;vertical-align:middle}
+.int .s{font-size:1.6em;line-height:1}
+.int .lim{display:inline-flex;flex-direction:column;font-size:.65em;line-height:1.1;font-style:normal}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1}
+.sum .s{font-size:1.5em}
+.sum small{font-size:.6em}
+
+.wrap{max-width:1080px;margin:0 auto;padding:18px 18px 40px}
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 20px;margin-bottom:14px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.3rem,8vw,3.8rem);line-height:.9;margin:0}
+.tagline{margin:4px 0 0;color:var(--ink-2);font-size:.95rem}
+.status{font-size:.8rem;color:var(--ink-2);margin:2px 0 0}
+.status.warn{color:var(--bad)}
+.masthead-eq{font-family:var(--math);font-size:clamp(1.4rem,4vw,2.2rem);display:flex;align-items:center;gap:.3em}
+.masthead-eq i{font-style:italic}
+
+/* main tabs: top on desktop, bottom on phones */
+nav.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:22px}
+nav.tabs button{display:flex;align-items:center;gap:8px;background:none;border:0;padding:10px 14px 12px;font-weight:600;color:var(--ink-2);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--amber)}
+nav.tabs .ic{width:22px;height:22px;display:inline-grid;place-items:center}
+nav.tabs .ic svg{width:22px;height:22px}
+nav.tabs .ic.sig{font-family:var(--math);font-size:1.45rem;line-height:1}
+@media (max-width:859px){
+  nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;margin:0;border:0;border-top:1.5px solid var(--line);background:var(--surface);gap:0;padding:0 4px env(safe-area-inset-bottom,0px)}
+  nav.tabs button{flex:1;flex-direction:column;gap:2px;padding:8px 2px 8px;font-size:.74rem;border-bottom:0;border-top:3px solid transparent;margin:0;min-height:var(--nav-h)}
+  nav.tabs button[aria-selected="true"]{border-top-color:var(--amber)}
+  .wrap{padding-bottom:calc(var(--nav-h) + 30px)}
+  body.on-score .wrap{padding-bottom:calc(var(--nav-h) + 96px)}
+  header.top{margin-bottom:10px}
+  .masthead-eq{font-size:1.3rem}
+}
+
+/* score layout */
+.score-layout{display:grid;gap:26px}
+@media (min-width:860px){.score-layout{grid-template-columns:minmax(0,1fr) 380px;align-items:start}.result{position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}}
+
+/* stepper */
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:18px}
+.step{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:8px 8px 9px;text-align:left;cursor:pointer;min-height:62px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.step .sl{display:flex;align-items:baseline;gap:5px;font-weight:600;font-size:.9rem}
+.step .sl .m{color:var(--amber-ink);font-size:1.1rem}
+.step .sv{font-size:.76rem;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step[aria-selected="true"]{border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--amber)}
+@media (max-width:520px){ .step .sl{font-size:.82rem} .step{padding:7px 6px} }
+
+.pane{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:20px}
+.pane h2,h2{font-family:var(--display);font-weight:600;font-size:1.7rem;line-height:1.1;margin:0 0 4px}
+.pane .lead{color:var(--ink-2);margin:0 0 18px;font-size:.95rem}
+.field{margin-bottom:20px}
+.field:last-child{margin-bottom:0}
+.field > label,.field > .lbl{display:flex;align-items:baseline;font-weight:600;margin-bottom:8px}
+.hint{font-size:.88rem;color:var(--ink-2);margin:8px 0 0}
+input[type=text],input[type=number]{width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:48px}
+input:focus{border-color:var(--amber)}
+.affix{position:relative;max-width:220px}
+.affix span{position:absolute;top:50%;transform:translateY(-50%);color:var(--ink-2)}
+.affix .pre{left:12px} .affix .post{right:12px}
+.affix input{padding-left:26px}
+.affix.pct input{padding-left:12px;padding-right:30px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 15px;min-height:42px;cursor:pointer;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.inline-other{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.92rem;color:var(--ink-2)}
+.inline-other input{max-width:110px;min-height:42px}
+.check{display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:12px}
+.check input{width:22px;height:22px;accent-color:var(--amber)}
+.pane-nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+
+.combo{position:relative}
+.suggest{list-style:none;margin:4px 0 0;padding:4px;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;position:absolute;left:0;right:0;z-index:5;max-height:280px;overflow:auto}
+.suggest button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:0;padding:10px;border-radius:6px;cursor:pointer}
+.suggest button:hover,.suggest button:focus-visible{background:var(--surface-2)}
+.suggest small{color:var(--ink-2);white-space:nowrap}
+.pi-note{background:var(--surface-2);border-left:4px solid var(--amber);padding:12px 14px;border-radius:0 10px 10px 0;font-size:.95rem}
+.linkish{background:none;border:0;padding:0;color:var(--amber-ink);font-weight:600;text-decoration:underline;cursor:pointer}
+details{margin-top:14px}
+summary{cursor:pointer;font-weight:500;color:var(--ink-2)}
+.computed{font-size:.92rem;color:var(--ink-2);margin:4px 0 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+
+/* glass picker */
+.glass-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
+.gcard{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-size:.8rem;font-weight:500;line-height:1.15;text-align:center;min-height:96px}
+.gcard svg{width:26px;height:39px}
+.gcard small{color:var(--ink-2);font-size:.74rem}
+.gcard[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);background:var(--surface-2)}
+.vol-preview{display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:center;background:var(--surface-2);border-radius:12px;padding:12px 16px;margin-top:4px}
+.vol-preview svg{width:64px;height:96px;display:block}
+.vol-preview .n{font-family:var(--display);font-weight:800;font-size:2.8rem;line-height:.9}
+.vol-preview .u{color:var(--ink-2);margin-left:4px}
+.vol-preview .hint{margin-top:4px}
+
+/* celebration after logging */
+.cheers{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(53,34,8,.62);opacity:0;transition:opacity .2s ease;padding:20px}
+.cheers.on{opacity:1}
+.cheers-card{background:var(--surface);border-radius:22px;padding:24px 24px 22px;width:min(340px,100%);text-align:center;transform:translateY(18px) scale(.95);transition:transform .4s cubic-bezier(.2,.9,.3,1.25)}
+.cheers.on .cheers-card{transform:none}
+#chGlass svg{width:120px;height:180px;display:block;margin:0 auto}
+.bubble{fill:var(--foam);opacity:0;animation:rise 1.5s ease-in infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(var(--rise,-30px));opacity:0}}
+.crown{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);transition:transform .45s cubic-bezier(.2,.9,.3,1.5)}
+.cheers.great .crown{transform:scaleY(1)}
+.ch-num{font-family:var(--display);font-weight:800;font-size:4.6rem;line-height:.9;margin:10px 0 0;font-variant-numeric:tabular-nums}
+.ch-verdict{font-weight:600;font-size:1.05rem;margin:4px 0 0;min-height:1.6em}
+.ch-verdict.good{color:var(--good)} .ch-verdict.bad{color:var(--bad)}
+.ch-title{font-family:var(--display);font-weight:600;font-size:1.6rem;margin:12px 0 0;line-height:1.1}
+.ch-sub{color:var(--ink-2);font-size:.92rem;margin:4px 0 18px}
+.cheers .btn{width:100%}
+@media (prefers-reduced-motion:reduce){.cheers,.cheers-card,.crown{transition:none}.bubble{animation:none}}
+
+/* pace slider */
+.pace-readout{display:flex;align-items:baseline;gap:10px;margin:2px 0 6px}
+.pace-readout .n{font-family:var(--display);font-weight:800;font-size:3.6rem;line-height:.9}
+.pace-readout .u{color:var(--ink-2)}
+input[type=range].pace{-webkit-appearance:none;appearance:none;width:100%;height:36px;background:transparent;cursor:pointer;--pct:30%}
+input[type=range].pace::-webkit-slider-runnable-track{height:10px;border-radius:999px;background:linear-gradient(90deg,var(--amber) 0 var(--pct),var(--line) var(--pct) 100%)}
+input[type=range].pace::-moz-range-track{height:10px;border-radius:999px;background:var(--line)}
+input[type=range].pace::-moz-range-progress{height:10px;border-radius:999px;background:var(--amber)}
+input[type=range].pace::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--surface);border:3px solid var(--amber);margin-top:-10px;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+input[type=range].pace::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--surface);border:3px solid var(--amber)}
+.ticks{display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-2);margin-top:2px}
+.pace-out{margin-top:12px;font-size:.95rem}
+
+/* result */
+.result{background:var(--surface);border-radius:18px;padding:20px;border:1.5px solid var(--line)}
+.hero{display:grid;grid-template-columns:90px 1fr;gap:16px;align-items:center}
+.glass-svg{width:90px;display:block}
+#resGlass svg{width:90px;height:135px;display:block}
+.big{font-family:var(--display);font-weight:800;font-size:5.4rem;line-height:.85;margin:0}
+.verdict{font-weight:600;font-size:1.1rem;margin:6px 0 0}
+.verdict.good{color:var(--good)} .verdict.bad{color:var(--bad)}
+.worth{color:var(--ink-2);font-size:.92rem;margin:4px 0 0}
+.factors{list-style:none;margin:18px 0 0;padding:0}
+.factors li{display:grid;grid-template-columns:1.8em 1fr auto;align-items:baseline;padding:8px 0;border-top:1px solid var(--line)}
+.factors .sym{margin:0}
+.factors .val{font-weight:600;font-variant-numeric:tabular-nums}
+.factors small{color:var(--ink-2);font-size:.82rem;margin-left:6px}
+.chart-wrap{margin-top:16px}
+.chart-wrap h3{font-size:1rem;margin:0 0 6px}
+.chart-wrap svg text{font:11px var(--body);fill:var(--ink-2)}
+.legend{font-size:.85rem;color:var(--ink-2);margin:6px 0 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 18px;min-height:48px;font-weight:600;cursor:pointer;background:var(--amber);color:var(--on-amber)}
+.btn.secondary{background:var(--surface-2);color:var(--ink);border:1.5px solid var(--line)}
+.btn.small{padding:6px 14px;min-height:38px;font-size:.92rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.result .btn.log{width:100%;margin-top:18px}
+.toast{font-size:.9rem;color:var(--good);min-height:1.4em;margin:8px 0 0;text-align:center}
+.to-magic{display:block;text-align:center;margin-top:4px}
+
+/* phone score strip */
+.strip{display:none}
+@media (max-width:859px){
+  body.on-score .strip{display:flex;position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:24;align-items:center;gap:12px;background:var(--surface-2);border-top:1.5px solid var(--line);padding:8px 18px}
+  .strip .n{font-family:var(--display);font-weight:800;font-size:2.3rem;line-height:1;min-width:2.2ch}
+  .strip .v{flex:1;font-weight:600;font-size:.95rem;line-height:1.2}
+  .strip .v small{display:block;font-weight:400;color:var(--ink-2);font-size:.8rem}
+}
+
+/* rankings */
+.rank-layout{display:grid;gap:26px}
+@media (min-width:860px){.rank-layout{grid-template-columns:360px minmax(0,1fr);align-items:start}}
+.tier-btns{display:grid;gap:8px}
+.tier-btns .btn{justify-content:space-between}
+.tier-btns .btn small{font-weight:400;opacity:.8;font-variant-numeric:tabular-nums}
+.compare{text-align:center}
+.vs{display:grid;gap:10px}
+.vs .btn{min-height:64px;font-size:1.05rem;white-space:normal}
+.scale{display:flex;height:12px;border-radius:999px;overflow:hidden;margin:6px 0 20px}
+.scale span{flex:1}
+.tier{margin-bottom:24px}
+.tier h3{font-family:var(--display);font-weight:600;font-size:1.4rem;margin:0;display:flex;align-items:baseline;gap:8px}
+.tier h3 small{font-family:var(--body);font-size:.85rem;font-weight:400;color:var(--ink-2)}
+ol.ranked{list-style:none;margin:0;padding:0;counter-reset:r}
+ol.ranked li{display:grid;grid-template-columns:2em 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);counter-increment:r}
+ol.ranked li::before{content:counter(r);font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--ink-2);text-align:center}
+.bname{font-weight:600}
+.bmeta{font-size:.85rem;color:var(--ink-2)}
+.bpi{font-family:var(--math);font-variant-numeric:tabular-nums;font-weight:600;margin-right:4px}
+.acts{display:flex;gap:4px;align-items:center}
+.icon{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;min-width:36px;min-height:36px;cursor:pointer}
+.icon:disabled{opacity:.35;cursor:default}
+.empty{color:var(--ink-2);padding:8px 0}
+.share-note{font-size:.88rem;color:var(--ink-2);margin-top:14px}
+
+/* history */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:24px}
+.stat{background:var(--surface);padding:14px 16px}
+.stat .k{font-size:.88rem;color:var(--ink-2)}
+.stat .val{font-family:var(--display);font-weight:800;font-size:2rem;line-height:1.05;overflow-wrap:anywhere}
+.stat .sub{font-size:.85rem;color:var(--ink-2)}
+.pour-list{list-style:none;margin:0;padding:0}
+.pour-list li{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.pscore{font-family:var(--display);font-weight:800;font-size:1.8rem;font-variant-numeric:tabular-nums}
+
+/* history: segments, shelf, badges, wrapped */
+.stats.compact{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}
+.stats.compact .stat{padding:10px 12px}
+.stats.compact .val{font-size:1.6rem}
+.stats.compact .val small{font-size:.9rem;font-family:var(--body);font-weight:500}
+@media (max-width:420px){.stats.compact .val{font-size:1.25rem}.stats.compact .stat{padding:8px 10px}}
+.seg{display:flex;gap:4px;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px;overflow-x:auto}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:9px 8px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+@media (max-width:420px){.seg button{font-size:.9rem;padding:9px 6px}}
+.seg button small{font-weight:500;opacity:.8}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+:root{--wall:#CBD9C7;--plank:#685634;--plank-2:#4E4026}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--wall:#2A1B06;--plank:#685634;--plank-2:#4E4026}}
+:root[data-theme="dark"]{--wall:#2A1B06;--plank:#685634;--plank-2:#4E4026}
+.shelf{--row:86px;display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));grid-auto-rows:var(--row);min-height:calc(var(--row) * var(--rows));
+  padding:0 12px;border-radius:14px;background-color:var(--wall);
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--row) - 10px),var(--plank) calc(var(--row) - 10px),var(--plank) calc(var(--row) - 4px),var(--plank-2) calc(var(--row) - 4px),var(--plank-2) var(--row));
+  box-shadow:inset 0 0 0 1.5px var(--line)}
+.sg{align-self:end;justify-self:center;margin-bottom:10px;background:none;border:0;padding:0;cursor:pointer;transition:transform .15s ease}
+.sg svg{width:36px;height:58px;display:block}
+.sg[aria-pressed="true"]{transform:translateY(-6px)}
+.sg[aria-pressed="true"] svg{filter:drop-shadow(0 3px 0 var(--amber))}
+.shelf-card{display:grid;grid-template-columns:70px 1fr;gap:16px;align-items:center;margin-top:12px}
+.sc-glass svg{width:70px;height:114px;display:block}
+.sc-name{font-family:var(--display);font-weight:600;font-size:1.4rem;margin:6px 0 2px}
+.pl-glass svg{width:26px;height:42px;display:block}
+.pour-list li{grid-template-columns:auto 1fr auto auto}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.badge{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.badge.earned{border-color:var(--amber)}
+.medal{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;background:var(--amber);color:var(--on-amber);box-shadow:inset 0 0 0 4px color-mix(in srgb,#352208 18%,var(--amber)),inset 0 0 0 7px var(--amber),inset 0 0 0 8.5px color-mix(in srgb,#352208 32%,var(--amber));flex:none}
+.medal span{font-family:var(--math);font-style:italic;font-size:1.7rem;line-height:1}
+.medal.locked{background:var(--surface-2);color:var(--ink-2);box-shadow:none;border:2px dashed var(--line)}
+.medal.sm{width:40px;height:40px}.medal.sm span{font-size:1.15rem}
+.medal.lg{width:110px;height:110px}.medal.lg span{font-size:3.2rem}
+.bn{font-weight:600;margin-top:6px}
+.bd{font-size:.84rem;color:var(--ink-2);line-height:1.35}
+.bdone{font-size:.8rem;font-weight:600;color:var(--good);margin-top:auto;padding-top:6px}
+.bar-p{width:100%;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;margin-top:auto}
+.bar-p span{display:block;height:100%;background:var(--amber)}
+.bp{font-size:.78rem;color:var(--ink-2)}
+.ch-badge{display:flex;align-items:center;justify-content:center;gap:10px;font-size:.92rem;margin:-6px 0 16px;opacity:0;transform:scale(.8);transition:opacity .3s,transform .4s cubic-bezier(.2,.9,.3,1.5)}
+.ch-badge.pop{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.ch-badge{transition:none}}
+
+.wrapped{max-width:400px;margin:0 auto}
+.wcard{position:relative;aspect-ratio:9/14;max-height:calc(100dvh - 260px);min-height:440px;border-radius:24px;padding:22px 24px 26px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:16px;cursor:pointer;user-select:none;touch-action:pan-y}
+.w-ink{background:#352208;color:#D9E5D6;--glass:#8F8466;--frost:#4B3615;--amber:#F28E1C;--foam:#F7F3E6;--on-amber:#352208}
+.w-amber{background:#F28E1C;color:#352208;--glass:#352208;--frost:#FBD3A2;--amber:#B3590A;--foam:#FFFFFF}
+.w-foam{background:#D9E5D6;color:#352208;--glass:#8F8466;--frost:#EEF3EC;--amber:#F28E1C;--foam:#FFFDF5;--on-amber:#352208}
+.w-khaki{background:#685634;color:#D9E5D6;--glass:#BFB394;--frost:#7A6843;--amber:#F28E1C;--foam:#D9E5D6}
+.w-amber .medal{background:#352208;color:#D9E5D6;box-shadow:inset 0 0 0 4px #4B3615,inset 0 0 0 7px #352208,inset 0 0 0 8.5px #685634}
+.wprog{display:flex;gap:4px;margin-bottom:4px}
+.wprog span{flex:1;height:4px;border-radius:2px;background:currentColor;opacity:.22}
+.wprog span.on{opacity:.85}
+.wk{font-weight:600;font-size:1.05rem;margin:0}
+.wbig{font-family:var(--display);font-weight:800;font-size:clamp(4rem,21vw,6.4rem);line-height:.82;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.wname{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,11vw,3.4rem);line-height:.9;overflow-wrap:anywhere}
+.wt{font-size:1.15rem;margin:10px 0 0;line-height:1.35}
+.ws{font-size:.95rem;margin:0;opacity:.85}
+.wshelf,.wpints,.wmedals{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end}
+.wshelf svg{width:30px;height:49px}
+.wpints svg{width:20px;height:32px}
+.wpints span{font-weight:700;align-self:center;margin-left:4px}
+.wbest{display:grid;grid-template-columns:90px 1fr;gap:16px;align-items:center}
+.wglass svg{width:90px;height:146px}
+.wpers{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.wnav{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.wcard.enter .wa{animation:wIn .5s cubic-bezier(.2,.8,.3,1) both}
+@keyframes wIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.wcard.enter .wa{animation:none}}
+
+/* magic doc */
+.doc{max-width:72ch;margin:0 auto;background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:clamp(20px,4vw,44px)}
+.doc h2{font-size:2.4rem;margin-bottom:4px}
+.doc h3{font-family:var(--display);font-weight:600;font-size:1.6rem;margin:36px 0 8px;padding-top:20px;border-top:1px solid var(--line)}
+.doc h4{font-size:1rem;margin:20px 0 6px}
+.doc p{margin:10px 0}
+.doc .lede{color:var(--ink-2);font-size:1.02rem}
+.eqn{font-family:var(--math);font-size:1.18rem;text-align:center;margin:16px 0;padding:12px 8px;overflow-x:auto;white-space:nowrap;line-height:2}
+.eqn .tag{display:block;color:var(--ink-2);font-style:normal;font-size:.85rem;font-family:var(--body);line-height:1.4;margin-top:2px}
+.mathblock{font-family:var(--math);font-size:1.06rem;line-height:2;margin:0;white-space:nowrap}
+.mathblock .cont{display:block;padding-left:1.1em}
+.mathblock .res{font-weight:600}
+.mathblock .hl{color:var(--amber-ink)}
+.worked{background:var(--surface-2);border-radius:12px;padding:16px;overflow-x:auto;display:grid;gap:10px;margin:14px 0}
+.worked .cap{font-family:var(--body);font-size:.85rem;color:var(--ink-2);white-space:normal}
+.doc table{width:100%;border-collapse:collapse;font-size:.95rem;margin:10px 0}
+.doc th{text-align:left;font-weight:600;color:var(--ink-2);font-size:.85rem;padding:6px 8px 6px 0;border-bottom:1.5px solid var(--line)}
+.doc td{padding:7px 8px 7px 0;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.doc .tw{overflow-x:auto}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.toc a{color:var(--ink);text-decoration:none;border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.88rem}
+</style>
+</head>
+<body class="on-score">
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Pour Score</h1>
+      <p class="tagline">Is this beer worth what you’re paying? 100 is an average deal.</p>
+      <p class="status" id="status" role="status" aria-live="polite">Loading your rankings…</p>
+    </div>
+    <div class="masthead-eq" aria-label="beta equals V times Pi times mu times f-bar, divided by y"><i>β</i><span>=</span><span class="frac"><span><i>V</i> · <i>Π</i> · <i>μ</i> · <i class="ov">f</i></span><span><i>y</i></span></span></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-score" aria-controls="score" data-view="score"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12l-1.6 18H7.6z"/><path d="M6.6 9h10.8"/></svg></span>Score</button>
+    <button role="tab" id="tab-rankings" aria-controls="rankings" data-view="rankings"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="3"/></svg></span>Rankings</button>
+    <button role="tab" id="tab-history" aria-controls="history" data-view="history"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>History</button>
+    <button role="tab" id="tab-magic" aria-controls="magic" data-view="magic"><span class="ic sig">Σ</span>See the magic</button>
+  </nav>
+
+  <!-- SCORE -->
+  <section class="view" id="score" role="tabpanel" aria-labelledby="tab-score">
+    <div class="score-layout">
+      <div>
+        <div class="steps" role="tablist" aria-label="Pour details" id="steps"></div>
+
+        <div class="pane" data-pane="beer">
+          <h2>The beer</h2>
+          <p class="lead">Pick one you’ve ranked, or type a new one.</p>
+          <div class="field combo">
+            <label for="beerName"><span class="sym">Π</span>Beer name</label>
+            <input type="text" id="beerName" autocomplete="off" placeholder="Search or type a beer" aria-autocomplete="list" aria-controls="suggest">
+            <ul class="suggest" id="suggest" hidden></ul>
+          </div>
+          <div class="field">
+            <label for="beerAbv"><span class="sym">a</span>ABV</label>
+            <div class="affix pct"><input type="number" id="beerAbv" min="0" max="20" step="0.1" placeholder="Optional" inputmode="decimal"><span class="post">%</span></div>
+            <p class="hint">Stronger beers taste best a little warmer, so ABV sets the ideal temperature.</p>
+          </div>
+          <div class="pi-note" id="piNote"></div>
+          <div class="pane-nav"><span></span><button class="btn small" data-next>Next: the pour</button></div>
+        </div>
+
+        <div class="pane" data-pane="pour" hidden>
+          <h2>The pour</h2>
+          <p class="lead">What actually landed in front of you.</p>
+          <div class="field"><span class="lbl" id="glassLbl"><span class="sym">C</span>What’s it served in?</span>
+            <div class="glass-grid" id="glassGrid" role="group" aria-labelledby="glassLbl"></div></div>
+          <div class="field" id="foamField"><span class="lbl" id="foamLbl"><span class="sym">φ</span>How much foam is on top?</span>
+            <div class="chips" id="foamChips" role="group" aria-labelledby="foamLbl"></div></div>
+          <div class="field">
+            <div class="vol-preview"><div id="volGlass"></div>
+              <div><div><span class="sym">V</span><span class="n" id="volNum">15</span><span class="u">oz of beer</span></div><p class="hint" id="volNote"></p></div></div>
+            <label class="inline-other">Know the exact amount? <input type="number" id="sizeOther" min="1" max="64" step="0.5" inputmode="decimal" placeholder="oz"> oz</label>
+          </div>
+          <div class="field"><span class="lbl" id="muLbl"><span class="sym">μ</span>Pour quality</span><div class="chips" id="muChips" role="group" aria-labelledby="muLbl"></div>
+            <label class="check"><input type="checkbox" id="frosted"> Frosted or chilled glass</label></div>
+          <div class="pane-nav"><button class="btn small secondary" data-prev>Back</button><button class="btn small" data-next>Next: the price</button></div>
+        </div>
+
+        <div class="pane" data-pane="price" hidden>
+          <h2>The price</h2>
+          <p class="lead">What you pay, with tip.</p>
+          <div class="field"><label for="price"><span class="sym">p</span>Menu price</label>
+            <div class="affix"><span class="pre">$</span><input type="number" id="price" min="0" step="0.25" inputmode="decimal"></div></div>
+          <div class="field"><span class="lbl" id="tipLbl"><span class="sym">τ</span>Tip</span><div class="chips" id="tipChips" role="group" aria-labelledby="tipLbl"></div>
+            <label class="inline-other">Other <input type="number" id="tipOther" min="0" max="100" step="1" inputmode="numeric" placeholder="%"> %</label>
+            <p class="computed" id="costNote"></p></div>
+          <div class="pane-nav"><button class="btn small secondary" data-prev>Back</button><button class="btn small" data-next>Next: the place</button></div>
+        </div>
+
+        <div class="pane" data-pane="place" hidden>
+          <h2>The place</h2>
+          <p class="lead">This sets how warm the room is, which decides how fast your beer warms up.</p>
+          <div class="field"><span class="lbl" id="venueLbl"><span class="sym">T<sub>r</sub></span>Where you are</span><div class="chips" id="venueChips" role="group" aria-labelledby="venueLbl"></div></div>
+          <div class="field"><span class="lbl" id="seasonLbl">Season</span><div class="chips" id="seasonChips" role="group" aria-labelledby="seasonLbl"></div>
+            <label class="check" id="sunWrap"><input type="checkbox" id="sun"> Sitting in direct sun</label></div>
+          <p class="computed" id="envNote"></p>
+          <details>
+            <summary>Set the temperatures yourself</summary>
+            <div class="two">
+              <div class="field"><label for="roomOv">Room °F</label><input type="number" id="roomOv" placeholder="Auto" inputmode="decimal"></div>
+              <div class="field"><label for="serveOv">Poured at °F</label><input type="number" id="serveOv" placeholder="Auto" inputmode="decimal"></div>
+            </div>
+          </details>
+          <div class="pane-nav"><button class="btn small secondary" data-prev>Back</button><button class="btn small" data-next>Next: your pace</button></div>
+        </div>
+
+        <div class="pane" data-pane="pace" hidden>
+          <h2>How you drink</h2>
+          <p class="lead">Slow sippers spend more time with a warming beer.</p>
+          <div class="field">
+            <label for="pace"><span class="sym">t<sub>d</sub></span>Time to finish a 16 oz beer</label>
+            <div class="pace-readout"><span class="n" id="paceNum">30</span><span class="u">minutes</span></div>
+            <input type="range" class="pace" id="pace" min="5" max="90" step="5" aria-describedby="paceOut">
+            <div class="ticks" aria-hidden="true"><span>Quick</span><span>Steady</span><span>Slow sip</span></div>
+            <p class="pace-out" id="paceOut"></p>
+          </div>
+          <label class="check"><input type="checkbox" id="strength"> Count alcohol strength, with 5% as the baseline</label>
+          <div class="pane-nav"><button class="btn small secondary" data-prev>Back</button><button class="btn small" id="paneLog">Log this pour</button></div>
+        </div>
+      </div>
+
+      <aside class="result" aria-label="Result">
+        <div class="hero">
+          <div class="glass-svg" id="resGlass"></div>
+          <div>
+            <p class="big" id="scoreNum">–</p>
+            <p class="verdict" id="verdict"></p>
+            <p class="worth" id="worth"></p>
+          </div>
+        </div>
+        <ul class="factors" id="factors"></ul>
+        <div class="chart-wrap">
+          <h3>Temperature while you drink</h3>
+          <div id="chart"></div>
+          <p class="legend" id="legend"></p>
+        </div>
+        <button class="btn log" id="logBtn">Log this pour</button>
+        <p class="toast" id="toast" role="status" aria-live="polite"></p>
+        <button class="linkish to-magic" data-goto="magic">See the math behind this score</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- RANKINGS -->
+  <section class="view" id="rankings" role="tabpanel" aria-labelledby="tab-rankings" hidden>
+    <div class="rank-layout">
+      <div class="pane" id="rankPanel"></div>
+      <div id="tierLists"></div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="view" id="history" role="tabpanel" aria-labelledby="tab-history" hidden>
+    <div id="historyBody"></div>
+  </section>
+
+  <!-- MAGIC -->
+  <section class="view" id="magic" role="tabpanel" aria-labelledby="tab-magic" hidden>
+    <article class="doc" id="doc"></article>
+  </section>
+</div>
+
+<div class="cheers" id="cheers" hidden role="dialog" aria-modal="true" aria-labelledby="chTitle">
+  <div class="cheers-card">
+    <div id="chGlass"></div>
+    <p class="ch-num" id="chNum">0</p>
+    <p class="ch-verdict" id="chVerdict"></p>
+    <p class="ch-title" id="chTitle"></p>
+    <p class="ch-sub" id="chSub"></p>
+    <p class="ch-badge" id="chBadge" hidden></p>
+    <button class="btn" id="chClose">Cheers</button>
+  </div>
+</div>
+
+<div class="strip">
+  <span class="n" id="barNum">–</span>
+  <span class="v"><span id="barVerdict"></span><small id="barWorth"></small></span>
+  <button class="btn small" id="barLog">Log</button>
+</div>
+
+<script>
+/* ---------- reference data ---------- */
+const T_MIN=38, T_MAX=55, T_DEFAULT=45, SIGMA=8, PRIOR_M=5;
+const idealFor = abv => Number.isFinite(abv) ? Math.round(Math.max(T_MIN, Math.min(T_MAX, 30 + 3*abv))*10)/10 : T_DEFAULT;
+// Benchmark that scores 100: 16 oz, middle-ranked (0.5), perfect pour, typical temperature (0.8), $7 + 20% tip
+const REF = 16*0.5*1*0.8/(7*1.2);
+const VENUES = {
+  taproom:{label:"Brewery taproom",indoor:true,base:68,swing:2,serve:42},
+  restaurant:{label:"Restaurant bar",indoor:true,base:70,swing:2,serve:38},
+  dive:{label:"Dive or crowded bar",indoor:true,base:73,swing:3,serve:36},
+  club:{label:"Club or concert",indoor:true,base:76,swing:3,serve:36},
+  patio:{label:"Patio",indoor:false,temps:{winter:52,spring:64,summer:80,fall:62},serve:38},
+  stadium:{label:"Stadium or ballpark",indoor:false,temps:{winter:38,spring:60,summer:82,fall:58},serve:36},
+  beach:{label:"Beach or pool",indoor:false,temps:{winter:72,spring:76,summer:86,fall:76},serve:36}
+};
+const SHORT_VENUE = {taproom:"Taproom",restaurant:"Restaurant",dive:"Dive bar",club:"Club",patio:"Patio",stadium:"Stadium",beach:"Beach"};
+const SEASONS = [["winter","Winter"],["spring","Spring"],["summer","Summer"],["fall","Fall"]];
+const SEASON_OFFSET = {winter:-1,spring:0,summer:1,fall:0};
+// Glasses: capacity C in oz, warming rate k per minute, outline path in a 40×60 box,
+// the part that holds beer (bowl) and its vertical range [y0,y1]
+const GLASSES = {
+  shaker:{label:"Pint glass",cap:16,k:0.015,path:"M8 4 L32 4 L28 56 L12 56 Z",y0:4,y1:56},
+  nonic:{label:"Imperial pint",cap:20,k:0.015,path:"M8 4 L32 4 L31 13 L33 18 L29 56 L11 56 L7 18 L9 13 Z",y0:4,y1:56},
+  mug:{label:"Mug",cap:16,k:0.010,path:"M7 10 L29 10 L29 56 L7 56 Z",extra:"M29 19 C38 19 38 45 29 45",y0:10,y1:56},
+  stein:{label:"Liter stein",cap:34,k:0.008,path:"M4 5 L29 5 L29 57 L4 57 Z",extra:"M29 14 C39 14 39 47 29 47",y0:5,y1:57},
+  tulip:{label:"Tulip",cap:13,k:0.022,path:"M11 4 C7 14 8 24 15 30 L18 33 L18 47 L12 52 L12 56 L28 56 L28 52 L22 47 L22 33 L25 30 C32 24 33 14 29 4 Z",bowl:"M11 4 C7 14 8 24 15 30 L18 33 L22 33 L25 30 C32 24 33 14 29 4 Z",y0:4,y1:33},
+  snifter:{label:"Snifter",cap:10,k:0.022,path:"M13 7 C3 14 3 30 14 36 L18 38 L18 48 L12 52 L12 56 L28 56 L28 52 L22 48 L22 38 L26 36 C37 30 37 14 27 7 Z",bowl:"M13 7 C3 14 3 30 14 36 L18 38 L22 38 L26 36 C37 30 37 14 27 7 Z",y0:9,y1:38},
+  goblet:{label:"Goblet",cap:12,k:0.018,path:"M7 6 L33 6 C33 22 28 30 22 32 L22 48 L27 53 L27 56 L13 56 L13 53 L18 48 L18 32 C12 30 7 22 7 6 Z",bowl:"M7 6 L33 6 C33 22 28 30 22 32 L18 32 C12 30 7 22 7 6 Z",y0:6,y1:32},
+  weizen:{label:"Wheat glass",cap:17,k:0.018,path:"M13 3 C10 11 11 18 14 24 C16 30 15 40 15 52 L14 57 L26 57 L25 52 C25 40 24 30 26 24 C29 18 30 11 27 3 Z",y0:3,y1:57},
+  cup:{label:"Plastic cup",cap:16,k:0.020,path:"M6 6 L34 6 L30 56 L10 56 Z",y0:6,y1:56},
+  can:{label:"Can",cap:12,k:0.018,path:"M11 8 L29 8 L30 11 L30 53 L29 56 L11 56 L10 53 L10 11 Z",y0:8,y1:56,noFoam:true},
+  tallboy:{label:"Tallboy can",cap:16,k:0.018,path:"M12 2 L28 2 L29 5 L29 55 L28 58 L12 58 L11 55 L11 5 Z",y0:2,y1:58,noFoam:true},
+  bottle:{label:"Bottle",cap:12,k:0.016,path:"M17 3 L23 3 L23 16 C29 20 29 22 29 26 L29 57 L11 57 L11 26 C11 22 11 20 17 16 Z",y0:3,y1:57,noFoam:true}
+};
+const FOAMS = [[0,"None"],[0.05,"Thin layer"],[0.12,"One finger"],[0.2,"Two fingers"],[0.35,"Lots"]];
+const POURS_MU = [[1,"Perfect"],[0.9,"Good"],[0.8,"Too much head"],[0.7,"Flat"],[0.6,"Dirty glass"]];
+const TIPS = [0,15,18,20,22,25];
+const TIERS = {
+  fav:{label:"All-time favorite",lo:0.80,hi:1.00},
+  loved:{label:"Loved it",lo:0.60,hi:0.79},
+  liked:{label:"Liked it",lo:0.40,hi:0.59},
+  okay:{label:"It was okay",lo:0.20,hi:0.39},
+  disliked:{label:"Didn’t like it",lo:0.00,hi:0.19}
+};
+const TIER_ORDER = ["fav","loved","liked","okay","disliked"];
+const TIER_COLORS = ["var(--amber)","color-mix(in srgb,var(--amber) 70%,var(--surface))","color-mix(in srgb,var(--amber) 42%,var(--surface))","color-mix(in srgb,var(--amber) 20%,var(--surface))","var(--line)"];
+const VERDICTS = [[150,"Great deal","good"],[110,"Good deal","good"],[90,"Fair price",""],[60,"A bit steep","bad"],[-Infinity,"Overpaid","bad"]];
+const STEPS = [["beer","Beer","Π"],["pour","Pour","V"],["price","Price","y"],["place","Place","T"],["pace","Pace","t"]];
+
+/* ---------- state ---------- */
+const S = { beers:{}, tiers:{fav:[],loved:[],liked:[],okay:[],disliked:[]}, settings:{pace:30,tip:20,strength:false} };
+let pours = [], catalog = {}, others = {};
+let rank = {stage:"form", beer:null};
+const calc = { slug:"", name:"", abv:"", glass:"shaker", foam:0.05, sizeOv:"", mu:1, frosted:false, price:8,
+  venue:"restaurant", season:currentSeason(), sun:false, roomOv:"", serveOv:"" };
+let step = "beer";
+
+function currentSeason(){ const m=new Date().getMonth(); return m<2||m===11?"winter":m<5?"spring":m<8?"summer":"fall"; }
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const slugify = n => String(n||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,80);
+const num = (v,d)=>{ const x=parseFloat(v); return Number.isFinite(x)?x:d; };
+const clamp01 = x => Math.max(0,Math.min(1,x));
+const money = x => "$"+(Math.round(x*100)/100).toFixed(2);
+const f2 = x => (+x).toFixed(2);
+const mean = arr => arr.length? arr.reduce((a,b)=>a+b,0)/arr.length : null;
+const mb = s => `<div class="mathblock">${s}</div>`;
+const fr = (a,b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+
+/* ---------- quality Π ---------- */
+function myPiMap(){
+  const out={};
+  for(const t of TIER_ORDER){
+    const list=S.tiers[t], {lo,hi}=TIERS[t], n=list.length;
+    list.forEach((slug,i)=>{ out[slug] = n===1 ? (lo+hi)/2 : hi - i*(hi-lo)/(n-1); });
+  }
+  return out;
+}
+function tierPos(slug){ for(const t of TIER_ORDER){ const i=S.tiers[t].indexOf(slug); if(i>=0) return {t,i,n:S.tiers[t].length}; } return null; }
+function beerMeta(slug){ return S.beers[slug] || catalog[slug] || null; }
+function priorFor(mine){
+  const all=Object.values(mine);
+  if(all.length) return {v:mean(all), why:"your average"};
+  return {v:0.5, why:"the middle of the scale"};
+}
+function pearson(a,b){
+  const n=a.length, ma=mean(a), mb_=mean(b); let nu=0,da=0,db=0;
+  for(let i=0;i<n;i++){ const x=a[i]-ma,y=b[i]-mb_; nu+=x*y; da+=x*x; db+=y*y; }
+  return da&&db ? nu/Math.sqrt(da*db) : 0;
+}
+function getPi(slug){
+  const mine=myPiMap();
+  if(slug && slug in mine) return {pi:mine[slug], source:"yours", pos:tierPos(slug)};
+  const prior=priorFor(mine);
+  if(!slug) return {pi:prior.v, source:"none", prior};
+  const raters=Object.values(others).filter(sc=>Number.isFinite(sc[slug]));
+  const n=raters.length;
+  if(!n) return {pi:prior.v, source:"prior", prior, n:0};
+  const crowd=mean(raters.map(sc=>sc[slug]));
+  const myMean=mean(Object.values(mine));
+  let wsum=0, adj=0, simCount=0;
+  if(myMean!==null){
+    for(const sc of raters){
+      const shared=Object.keys(mine).filter(k=>k!==slug && Number.isFinite(sc[k]));
+      if(shared.length<3) continue;
+      const r=pearson(shared.map(k=>mine[k]), shared.map(k=>sc[k]));
+      const s=r*shared.length/(shared.length+5);
+      if(Math.abs(s)<0.1) continue;
+      const theirMean=mean(Object.values(sc));
+      adj+=s*(sc[slug]-theirMean); wsum+=Math.abs(s); simCount++;
+    }
+  }
+  const useSim = simCount>=2 && wsum>=0.3;
+  const signal = useSim ? clamp01(myMean + adj/wsum) : crowd;
+  const pi = clamp01((n*signal + PRIOR_M*prior.v)/(n+PRIOR_M));
+  return {pi, source:useSim?"similar":"crowd", n, simCount, prior, signal, crowd};
+}
+
+/* ---------- temperature ---------- */
+function envFor(){
+  const v=VENUES[calc.venue];
+  let room = v.indoor ? v.base + SEASON_OFFSET[calc.season]*v.swing : v.temps[calc.season];
+  let serve = v.serve - (calc.frosted?4:0);
+  if(calc.roomOv!=="") room=num(calc.roomOv,room);
+  if(calc.serveOv!=="") serve=num(calc.serveOv,serve);
+  const k = GLASSES[calc.glass].k * (calc.sun && !v.indoor ? 2 : 1);
+  return {room, serve, k};
+}
+const tempAt = (t,e) => e.room - (e.room - e.serve)*Math.exp(-e.k*t);
+const fOf = (T,ideal) => Math.exp(-Math.pow((T-ideal)/SIGMA,2));
+
+/* ---------- volume ---------- */
+const halfRound = x => Math.round(x*2)/2;
+function volumeInfo(){
+  const g=GLASSES[calc.glass], phi=g.noFoam?0:calc.foam, ov=num(calc.sizeOv,NaN);
+  const est=halfRound(g.cap*(1-phi));
+  return {g, phi, est, V: ov>0 ? ov : est, exact: ov>0};
+}
+
+/* ---------- glass drawing ---------- */
+let gid=0;
+function glassMarkup(key){
+  const g=GLASSES[key], id="gc"+(++gid);
+  return `<svg viewBox="0 0 40 60" aria-hidden="true"><defs><clipPath id="${id}"><path d="${g.bowl||g.path}"/></clipPath></defs>
+    <path d="${g.path}" fill="var(--frost)" opacity=".4"/>
+    <g clip-path="url(#${id})"><rect class="beer" x="0" width="40" y="${g.y1}" height="0" fill="var(--amber)"/><rect class="foam" x="0" width="40" y="${g.y1}" height="0" fill="var(--foam)"/><g class="bubbles"></g></g>
+    <path d="${g.path}" fill="none" stroke="var(--glass)" stroke-width="1.5" stroke-linejoin="round"/>${g.extra?`<path d="${g.extra}" fill="none" stroke="var(--glass)" stroke-width="2.4" stroke-linecap="round"/>`:""}</svg>`;
+}
+function mountGlass(el,key){ if(el.dataset.g===key) return false; el.dataset.g=key; el.innerHTML=glassMarkup(key); el._fill=0; return true; }
+function setLevel(el,fill,foamFrac){
+  const g=GLASSES[el.dataset.g]; if(!g) return;
+  const H=g.y1-g.y0, top=g.y1-H*fill, foamH=Math.min(H*fill,H*foamFrac);
+  const beer=el.querySelector(".beer"), foam=el.querySelector(".foam");
+  beer.setAttribute("y",top+foamH); beer.setAttribute("height",Math.max(0,g.y1-top-foamH));
+  foam.setAttribute("y",top); foam.setAttribute("height",Math.max(0,foamH));
+}
+const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+function tweenLevel(el,to,foamFrac,ms){
+  cancelAnimationFrame(el._raf);
+  const from=el._fill??0;
+  if(reduceMotion()||!ms){ el._fill=to; setLevel(el,to,foamFrac); return; }
+  const t0=performance.now();
+  const tick=now=>{ const k=Math.min(1,(now-t0)/ms), e=1-Math.pow(1-k,3); el._fill=from+(to-from)*e; setLevel(el,el._fill,foamFrac); if(k<1) el._raf=requestAnimationFrame(tick); };
+  el._raf=requestAnimationFrame(tick);
+}
+function renderGlassGrid(){
+  $("#glassGrid").innerHTML=Object.entries(GLASSES).map(([k,g])=>`<button type="button" class="gcard" data-glass="${k}" aria-pressed="${k===calc.glass}">${glassMarkup(k)}<span>${g.label}</span><small>${g.cap} oz</small></button>`).join("");
+  $("#glassGrid").querySelectorAll(".gcard").forEach(b=>{ const svg=b.querySelector("svg"); const wrap=document.createElement("span"); b.replaceChild(wrap,svg); wrap.dataset.g=b.dataset.glass; wrap.appendChild(svg); setLevel(wrap,0.85,0.1); });
+}
+
+/* ---------- computation ---------- */
+function compute(){
+  const abv=num(calc.abv,NaN), ideal=idealFor(abv);
+  const vol=volumeInfo(), V=Math.max(0,vol.V);
+  const piInfo=getPi(calc.slug);
+  const mu=calc.mu, env=envFor();
+  const td=Math.max(1, S.settings.pace*V/16);
+  const steps=Math.max(20,Math.round(td));
+  let fsum=0; const pts=[];
+  for(let i=0;i<steps;i++){ fsum+=fOf(tempAt((i+0.5)*td/steps,env),ideal); }
+  for(let i=0;i<=40;i++){ const t=i*td/40; pts.push([t,tempAt(t,env)]); }
+  const fbar=fsum/steps;
+  const price=Math.max(0,num(calc.price,0));
+  const tau=Math.max(0,num(S.settings.tip,0))/100;
+  const tipAmt=price*tau, y=price*(1+tau);
+  const strength = S.settings.strength ? (Number.isFinite(abv)? abv/5 : 1) : 1;
+  const value=V*piInfo.pi*mu*fbar*strength;
+  const beta = y>0 ? value/y : null;
+  const score = beta===null ? null : 100*beta/REF;
+  const breakEven = value/(REF*(1+tau));
+  return {vol, abv, ideal, V, piInfo, mu, env, td, steps, pts, fbar, price, tau, tipAmt, y, strength, value, beta, score, breakEven};
+}
+function verdictFor(r){
+  if(r.score===null) return {t:"Enter a price",c:""};
+  if(r.piInfo.pi<0.05) return {t:"You don’t like this one",c:"bad"};
+  const v=VERDICTS.find(([min])=>r.score>=min); return {t:v[1],c:v[2]};
+}
+
+/* ---------- score inputs ---------- */
+function chips(el, opts, isOn, onPick){
+  el.innerHTML=opts.map(([v,l])=>`<button type="button" class="chip" data-v="${esc(v)}">${esc(l)}</button>`).join("");
+  const sync=()=>el.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",isOn(b.dataset.v)?"true":"false"));
+  el.addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(!b) return; onPick(b.dataset.v); syncAll(); update(); });
+  sync(); return sync;
+}
+let syncers=[];
+function syncAll(){ syncers.forEach(f=>f()); }
+function setupScoreInputs(){
+  $("#steps").innerHTML = STEPS.map(([k,l,s],i)=>`<button class="step" role="tab" data-step="${k}" id="st-${k}" aria-controls="pane-${k}"><span class="sl"><span class="m">${s}</span>${l}</span><span class="sv" id="sv-${k}"></span></button>`).join("");
+  document.querySelectorAll("[data-pane]").forEach(p=>{ p.id="pane-"+p.dataset.pane; p.setAttribute("role","tabpanel"); p.setAttribute("aria-labelledby","st-"+p.dataset.pane); });
+  $("#steps").addEventListener("click",e=>{ const b=e.target.closest("[data-step]"); if(b) showStep(b.dataset.step); });
+  document.querySelectorAll("[data-next]").forEach(b=>b.addEventListener("click",()=>moveStep(1)));
+  document.querySelectorAll("[data-prev]").forEach(b=>b.addEventListener("click",()=>moveStep(-1)));
+
+  renderGlassGrid();
+  $("#glassGrid").addEventListener("click",e=>{ const b=e.target.closest("[data-glass]"); if(!b) return; calc.glass=b.dataset.glass;
+    $("#glassGrid").querySelectorAll(".gcard").forEach(c=>c.setAttribute("aria-pressed",c.dataset.glass===calc.glass?"true":"false")); update(); });
+  syncers.push(chips($("#foamChips"), FOAMS, v=>+v===calc.foam, v=>calc.foam=+v));
+  syncers.push(chips($("#muChips"), POURS_MU, v=>+v===calc.mu, v=>calc.mu=+v));
+  syncers.push(chips($("#tipChips"), TIPS.map(t=>[t,t?t+"%":"None"]), v=>+v===+S.settings.tip, v=>{S.settings.tip=+v; $("#tipOther").value=""; saveState();}));
+  syncers.push(chips($("#venueChips"), Object.entries(VENUES).map(([k,g])=>[k,g.label]), v=>v===calc.venue, v=>calc.venue=v));
+  syncers.push(chips($("#seasonChips"), SEASONS, v=>v===calc.season, v=>calc.season=v));
+
+  const bn=$("#beerName");
+  bn.addEventListener("input",()=>{ calc.name=bn.value; calc.slug=slugify(bn.value); const m=beerMeta(calc.slug); if(m) applyMeta(m); renderSuggest(); update(); });
+  bn.addEventListener("focus",renderSuggest);
+  bn.addEventListener("blur",()=>setTimeout(()=>{ if(!$("#suggest").contains(document.activeElement)) $("#suggest").hidden=true; },150));
+  bn.addEventListener("keydown",e=>{ if(e.key==="Escape") $("#suggest").hidden=true; if(e.key==="ArrowDown"){ const f=$("#suggest button"); if(f){e.preventDefault(); f.focus();} } });
+  $("#suggest").addEventListener("click",e=>{ const b=e.target.closest("button[data-slug]"); if(b) pickBeer(b.dataset.slug); });
+  $("#suggest").addEventListener("keydown",e=>{ const bs=[...$("#suggest").querySelectorAll("button")]; const i=bs.indexOf(document.activeElement);
+    if(e.key==="ArrowDown"&&i<bs.length-1){e.preventDefault();bs[i+1].focus();} if(e.key==="ArrowUp"){e.preventDefault(); i>0?bs[i-1].focus():bn.focus();} if(e.key==="Escape"){$("#suggest").hidden=true;bn.focus();} });
+  $("#beerAbv").addEventListener("input",e=>{calc.abv=e.target.value; update();});
+  $("#sizeOther").addEventListener("input",e=>{ calc.sizeOv=e.target.value; update(); });
+  $("#frosted").addEventListener("change",e=>{calc.frosted=e.target.checked; update();});
+  $("#price").addEventListener("input",e=>{calc.price=e.target.value; update();});
+  $("#tipOther").addEventListener("input",e=>{ const v=num(e.target.value,NaN); if(v>=0){S.settings.tip=v; saveState(); syncAll(); update();} });
+  $("#sun").addEventListener("change",e=>{calc.sun=e.target.checked; update();});
+  $("#roomOv").addEventListener("input",e=>{calc.roomOv=e.target.value; update();});
+  $("#serveOv").addEventListener("input",e=>{calc.serveOv=e.target.value; update();});
+  $("#pace").addEventListener("input",e=>{S.settings.pace=+e.target.value; saveState(); update();});
+  $("#strength").addEventListener("change",e=>{S.settings.strength=e.target.checked; saveState(); update();});
+  ["#logBtn","#barLog","#paneLog"].forEach(id=>$(id).addEventListener("click",logPour));
+  $("#piNote").addEventListener("click",e=>{ if(e.target.closest("[data-rank-now]")) startRankFromCalc(); });
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-goto]"); if(b){ go(b.dataset.goto); window.scrollTo({top:0}); } });
+  syncInputs(); showStep("beer");
+}
+function showStep(k){
+  step=k;
+  document.querySelectorAll("[data-pane]").forEach(p=>p.hidden=p.dataset.pane!==k);
+  document.querySelectorAll("[data-step]").forEach(b=>b.setAttribute("aria-selected",b.dataset.step===k?"true":"false"));
+}
+function moveStep(d){
+  const i=STEPS.findIndex(s=>s[0]===step), j=Math.max(0,Math.min(STEPS.length-1,i+d));
+  showStep(STEPS[j][0]);
+  const top=$("#steps").getBoundingClientRect().top+window.scrollY-12;
+  if(window.scrollY>top) window.scrollTo({top});
+}
+function syncInputs(){
+  $("#beerName").value=calc.name; $("#beerAbv").value=calc.abv; $("#sizeOther").value=calc.sizeOv; $("#frosted").checked=calc.frosted; $("#price").value=calc.price;
+  $("#sun").checked=calc.sun; $("#pace").value=S.settings.pace; $("#strength").checked=S.settings.strength;
+  if(!TIPS.includes(+S.settings.tip)) $("#tipOther").value=S.settings.tip;
+  syncAll();
+}
+function applyMeta(m){ if(m.abv!==undefined&&m.abv!==""&&m.abv!==null){ calc.abv=String(m.abv); $("#beerAbv").value=calc.abv; } }
+function pickBeer(slug){ const m=beerMeta(slug); if(!m) return; calc.slug=slug; calc.name=m.name; $("#beerName").value=m.name; applyMeta(m); $("#suggest").hidden=true; update(); }
+function allKnownBeers(){ const map={...catalog}; for(const [k,v] of Object.entries(S.beers)) map[k]=v; return map; }
+function renderSuggest(){
+  const q=calc.name.trim().toLowerCase(), ul=$("#suggest"), mine=myPiMap();
+  const items=Object.entries(allKnownBeers()).filter(([,m])=>m&&m.name&&(!q||m.name.toLowerCase().includes(q)))
+    .sort((a,b)=>(b[0] in mine)-(a[0] in mine) || a[1].name.localeCompare(b[1].name)).slice(0,7);
+  if(!items.length||(items.length===1&&items[0][0]===calc.slug)){ ul.hidden=true; return; }
+  ul.innerHTML=items.map(([slug,m])=>`<li><button type="button" data-slug="${esc(slug)}"><span>${esc(m.name)}</span><small>${slug in mine?`Your Π ${f2(mine[slug])}`:"Not ranked by you"}</small></button></li>`).join("");
+  ul.hidden=false;
+}
+
+/* ---------- score output ---------- */
+function piNoteText(r){
+  const p=r.piInfo, v=f2(p.pi), rankBtn=` <button type="button" class="linkish" data-rank-now>Rank it</button>`;
+  if(p.source==="yours") return `You ranked this #${p.pos.i+1} in “${TIERS[p.pos.t].label},” so <span class="m">Π</span> = <b>${v}</b>.`;
+  if(p.source==="none") return `Until you pick a beer, <span class="m">Π</span> uses ${p.prior.why}: <b>${v}</b>.`;
+  if(p.source==="prior") return `Nobody has ranked this yet, so <span class="m">Π</span> starts at ${p.prior.why}: <b>${v}</b>.${rankBtn}`;
+  if(p.source==="similar") return `Estimated <span class="m">Π</span> = <b>${v}</b> from ${p.simCount} drinker${p.simCount>1?"s":""} with taste like yours.${rankBtn}`;
+  return `Estimated <span class="m">Π</span> = <b>${v}</b> from ${p.n} drinker${p.n>1?"s":""}, leaning on ${p.prior.why} until more people rank it.${rankBtn}`;
+}
+function renderChart(r){
+  const W=320,H=150,pl=34,pr=8,pt=10,pb=24, temps=r.pts.map(p=>p[1]);
+  const lo=Math.floor(Math.min(...temps,r.ideal-SIGMA)-2), hi=Math.ceil(Math.max(...temps,r.ideal+SIGMA)+2);
+  const x=t=>pl+(W-pl-pr)*t/r.td, y=T=>pt+(H-pt-pb)*(1-(T-lo)/(hi-lo));
+  const path=r.pts.map((p,i)=>(i?"L":"M")+x(p[0]).toFixed(1)+" "+y(p[1]).toFixed(1)).join(" ");
+  const end=r.pts[r.pts.length-1][1];
+  $("#chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Beer warms from ${Math.round(r.env.serve)} to ${Math.round(end)} degrees over ${Math.round(r.td)} minutes; ideal is ${r.ideal} degrees.">
+    <rect x="${pl}" y="${y(r.ideal+SIGMA/2)}" width="${W-pl-pr}" height="${y(r.ideal-SIGMA/2)-y(r.ideal+SIGMA/2)}" fill="var(--amber-soft)"/>
+    <line x1="${pl}" x2="${W-pr}" y1="${y(r.ideal)}" y2="${y(r.ideal)}" stroke="var(--amber)" stroke-dasharray="4 3" stroke-width="1.5"/>
+    <line x1="${pl}" x2="${pl}" y1="${pt}" y2="${H-pb}" stroke="var(--line)"/><line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" stroke="var(--line)"/>
+    <path d="${path}" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="${x(0)}" cy="${y(r.env.serve)}" r="3.5" fill="var(--ink)"/><circle cx="${x(r.td)}" cy="${y(end)}" r="3.5" fill="var(--ink)"/>
+    <text x="${pl-5}" y="${y(hi)+4}" text-anchor="end">${hi}°</text><text x="${pl-5}" y="${y(lo)}" text-anchor="end">${lo}°</text>
+    <text x="${pl-5}" y="${y(r.ideal)+4}" text-anchor="end">${r.ideal}°</text>
+    <text x="${pl}" y="${H-6}">0 min</text><text x="${W-pr}" y="${H-6}" text-anchor="end">${Math.round(r.td)} min</text></svg>`;
+  $("#legend").textContent=`Poured at ${Math.round(r.env.serve)}°F, finished at ${Math.round(end)}°F. The shaded band is the sweet spot for this beer, around ${r.ideal}°F.`;
+}
+function summaries(r){
+  $("#sv-beer").textContent = calc.name.trim() || "Not set";
+  $("#sv-pour").textContent = `${r.V} oz`;
+  $("#sv-price").textContent = money(r.price);
+  $("#sv-place").textContent = SHORT_VENUE[calc.venue];
+  $("#sv-pace").textContent = `${S.settings.pace} min`;
+}
+let lastResult=null;
+function update(){
+  const r=compute(); lastResult=r; const vd=verdictFor(r);
+  const s=r.score===null?"–":Math.round(r.score);
+  $("#scoreNum").textContent=s; $("#barNum").textContent=s;
+  const vEl=$("#verdict"); vEl.textContent=vd.t; vEl.className="verdict "+vd.c; $("#barVerdict").textContent=vd.t;
+  const worth = r.score===null ? "" : r.breakEven>0.005 ? `Worth up to ${money(r.breakEven)} on the menu for you.` : "No price makes this an average deal for you.";
+  $("#worth").textContent=worth; $("#barWorth").textContent = r.breakEven>0.005 ? `Worth up to ${money(r.breakEven)}` : "";
+  const rg=$("#resGlass"); mountGlass(rg,calc.glass);
+  tweenLevel(rg, r.score===null?0:Math.min(r.score,200)/200, 0.07, 450);
+  const vg=$("#volGlass"); mountGlass(vg,calc.glass); setLevel(vg,1,r.vol.phi);
+  $("#foamField").hidden=!!r.vol.g.noFoam;
+  $("#volNum").textContent=r.V;
+  $("#volNote").textContent = r.vol.exact ? `Using the exact amount you entered. Clear it to go back to the estimate of ${r.vol.est} oz.`
+    : r.vol.g.noFoam ? `A full ${r.vol.g.label.toLowerCase()} holds ${r.vol.g.cap} oz.`
+    : r.vol.phi ? `A ${r.vol.g.label.toLowerCase()} holds ${r.vol.g.cap} oz, and the foam takes up about ${halfRound(r.vol.g.cap*r.vol.phi)} oz of that.` : `A full ${r.vol.g.label.toLowerCase()} holds ${r.vol.g.cap} oz.`;
+  const srcLbl={yours:"your ranking",similar:"similar taste",crowd:"other drinkers",prior:"your average",none:"your average"}[r.piInfo.source];
+  $("#factors").innerHTML=[
+    ["V","Volume","",r.V+" oz"],
+    ["Π","Quality",srcLbl,f2(r.piInfo.pi)],
+    ["μ","Pour","",f2(r.mu)],
+    ['<span class="ov">f</span>',"Temperature","",f2(r.fbar)],
+    ...(S.settings.strength?[["s","Strength",Number.isFinite(r.abv)?r.abv+"% ABV":"add ABV",f2(r.strength)]]:[]),
+    ["y","Cost",`with ${+S.settings.tip}% tip`,money(r.y)]
+  ].map(([sy,a,b,c])=>`<li><span class="sym">${sy}</span><span>${a}${b?`<small>${esc(b)}</small>`:""}</span><span class="val">${c}</span></li>`).join("");
+  $("#piNote").innerHTML=piNoteText(r);
+  const v=VENUES[calc.venue];
+  $("#sunWrap").hidden=v.indoor;
+  $("#envNote").innerHTML=`Room about ${Math.round(r.env.room)}°F, beer poured at about ${Math.round(r.env.serve)}°F.`;
+  $("#costNote").textContent=`${money(r.price)} + ${money(r.tipAmt)} tip = ${money(r.y)}`;
+  $("#paceNum").textContent=S.settings.pace;
+  const pct=(S.settings.pace-5)/(90-5)*100; $("#pace").style.setProperty("--pct",pct+"%");
+  $("#paceOut").textContent = r.V===16 ? `You’ll finish this one in about ${Math.round(r.td)} minutes.` : `At this pace, your ${r.V} oz pour takes about ${Math.round(r.td)} minutes.`;
+  renderChart(r); summaries(r);
+  const canLog=r.score!==null && calc.name.trim();
+  ["#logBtn","#barLog","#paneLog"].forEach(id=>{ $(id).disabled=!canLog; $(id).title=canLog?"":"Add a beer name and price to log this pour"; });
+  if(!$("#magic").hidden) renderWorked();
+}
+
+/* ---------- rankings ---------- */
+function startRankFromCalc(){ rank={stage:"tier", beer:{slug:calc.slug, name:calc.name.trim(), abv:calc.abv}}; go("rankings"); }
+function removeFromTiers(slug){ for(const t of TIER_ORDER) S.tiers[t]=S.tiers[t].filter(s=>s!==slug); }
+function finishInsert(pos){
+  const {beer,tier}=rank; removeFromTiers(beer.slug);
+  S.tiers[tier].splice(pos,0,beer.slug);
+  S.beers[beer.slug]={name:beer.name, abv:beer.abv===""||beer.abv==null?"":num(beer.abv,"")};
+  rank={stage:"done", beer};
+  saveState(); saveRatings(); ensureCatalog(beer.slug); renderRankings(); update();
+}
+function renderRankings(){
+  const p=$("#rankPanel");
+  if(rank.stage==="form"||rank.stage==="done"){
+    const doneMsg=rank.stage==="done"?`<p class="toast" style="text-align:left;margin:0 0 10px">Ranked ${esc(rank.beer.name)} at Π = ${f2(myPiMap()[rank.beer.slug])}.</p>`:"";
+    p.innerHTML=`<h2>Rank a beer</h2><p class="lead">Five tiers, then a few quick comparisons to place it.</p>${doneMsg}
+      <div class="field"><label for="rName">Beer name</label><input type="text" id="rName" autocomplete="off"></div>
+      <div class="field"><label for="rAbv">ABV</label><div class="affix pct"><input type="number" id="rAbv" min="0" max="20" step="0.1" inputmode="decimal" placeholder="Optional"><span class="post">%</span></div></div>
+      <button class="btn" id="rNext" style="width:100%">Next: how was it?</button><p class="hint" id="rErr"></p>`;
+    $("#rName").addEventListener("input",e=>{ const m=beerMeta(slugify(e.target.value)); if(m&&m.abv!==undefined) $("#rAbv").value=m.abv??""; });
+    $("#rNext").addEventListener("click",()=>{
+      const name=$("#rName").value.trim(), slug=slugify(name);
+      if(!slug){ $("#rErr").textContent="Add a beer name with at least one letter or number."; return; }
+      rank={stage:"tier", beer:{slug,name,abv:$("#rAbv").value}}; renderRankings();
+    });
+  } else if(rank.stage==="tier"){
+    const already=myPiMap()[rank.beer.slug]!==undefined;
+    p.innerHTML=`<h2>How was ${esc(rank.beer.name)}?</h2>
+      ${already?`<p class="lead">You’ve ranked this before. Ranking it again replaces the old spot.</p>`:`<p class="lead">Pick the tier that fits best.</p>`}
+      <div class="tier-btns">${TIER_ORDER.map((t,i)=>`<button class="btn ${i===0?"":"secondary"}" data-tier="${t}"><span>${TIERS[t].label}</span><small>${f2(TIERS[t].lo)} to ${f2(TIERS[t].hi)}</small></button>`).join("")}</div>
+      <p style="margin-top:14px"><button class="linkish" id="rCancel">Cancel</button></p>`;
+    p.querySelectorAll("[data-tier]").forEach(b=>b.addEventListener("click",()=>{
+      rank.tier=b.dataset.tier; const list=S.tiers[rank.tier].filter(s=>s!==rank.beer.slug);
+      if(!list.length){ finishInsert(0); return; }
+      Object.assign(rank,{list,lo:0,hi:list.length,stage:"compare"}); renderRankings();
+    }));
+    $("#rCancel").addEventListener("click",()=>{rank={stage:"form"}; renderRankings();});
+  } else if(rank.stage==="compare"){
+    const mid=Math.floor((rank.lo+rank.hi)/2), other=S.beers[rank.list[mid]]||{name:"that one"};
+    const left=Math.ceil(Math.log2(rank.hi-rank.lo+1));
+    p.innerHTML=`<div class="compare"><h2>Which did you like more?</h2><p class="lead">About ${left} more question${left>1?"s":""}.</p>
+      <div class="vs"><button class="btn" id="cNew">${esc(rank.beer.name)}</button><button class="btn secondary" id="cOld">${esc(other.name)}</button></div>
+      <p style="margin-top:12px"><button class="linkish" id="cTie">Too close to call</button></p></div>`;
+    const settle=()=>{ if(rank.lo>=rank.hi) finishInsert(rank.lo); else renderRankings(); };
+    $("#cNew").addEventListener("click",()=>{rank.hi=mid; settle();});
+    $("#cOld").addEventListener("click",()=>{rank.lo=mid+1; settle();});
+    $("#cTie").addEventListener("click",()=>finishInsert(mid));
+  }
+  renderTierLists();
+}
+function renderTierLists(){
+  const mine=myPiMap(), total=Object.keys(mine).length;
+  $("#tierLists").innerHTML=`<div class="scale" aria-hidden="true">${TIER_COLORS.map(c=>`<span style="background:${c}"></span>`).join("")}</div>`
+    +(total?"":`<p class="empty">No beers ranked yet. Rank a few you know well and your scores will start reflecting your taste.</p>`)
+    +TIER_ORDER.map((t,ti)=>{
+      const list=S.tiers[t];
+      return `<div class="tier"><h3>${TIERS[t].label}<small>${f2(TIERS[t].lo)} to ${f2(TIERS[t].hi)}</small></h3>
+      ${list.length?`<ol class="ranked">${list.map((slug,i)=>{ const b=S.beers[slug]||{name:slug};
+        const upOff=ti===0&&i===0, downOff=ti===TIER_ORDER.length-1&&i===list.length-1;
+        return `<li><div><div class="bname">${esc(b.name)}</div><div class="bmeta">${b.abv!==""&&b.abv!=null?`${esc(b.abv)}% ABV`:"ABV not set"}</div></div>
+        <div class="acts"><span class="bpi">${f2(mine[slug])}</span>
+        <button class="icon" data-act="up" data-t="${t}" data-i="${i}" aria-label="Move ${esc(b.name)} up" ${upOff?"disabled":""}>↑</button>
+        <button class="icon" data-act="down" data-t="${t}" data-i="${i}" aria-label="Move ${esc(b.name)} down" ${downOff?"disabled":""}>↓</button>
+        <button class="icon" data-act="rerank" data-slug="${esc(slug)}" aria-label="Rank ${esc(b.name)} again">↻</button>
+        <button class="icon" data-act="del" data-slug="${esc(slug)}" aria-label="Remove ${esc(b.name)}">✕</button></div></li>`;}).join("")}</ol>`:`<p class="empty">Nothing here yet.</p>`}</div>`;
+    }).join("")
+    +`<p class="share-note">Moving a beer past the top or bottom of its tier moves it into the next tier. ${storeMode==="db"?"Your rankings are shared without your name with others who use this page, so it can estimate beers they haven’t tried, and theirs help you.":"Your rankings are saved in this browser. Community estimates appear when this page is opened in Claude by people it’s shared with."}</p>`;
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("#tierLists [data-act]"); if(!b) return;
+  const act=b.dataset.act;
+  if(act==="up"||act==="down"){
+    const t=b.dataset.t, ti=TIER_ORDER.indexOf(t), l=S.tiers[t], i=+b.dataset.i;
+    if(act==="up"){ if(i>0) [l[i-1],l[i]]=[l[i],l[i-1]]; else if(ti>0){ const [s]=l.splice(0,1); S.tiers[TIER_ORDER[ti-1]].push(s); } }
+    else { if(i<l.length-1) [l[i+1],l[i]]=[l[i],l[i+1]]; else if(ti<TIER_ORDER.length-1){ const [s]=l.splice(i,1); S.tiers[TIER_ORDER[ti+1]].unshift(s); } }
+  }
+  else if(act==="del") removeFromTiers(b.dataset.slug);
+  else if(act==="rerank"){ const m=S.beers[b.dataset.slug]; rank={stage:"tier",beer:{slug:b.dataset.slug,...m}}; renderRankings(); window.scrollTo({top:0}); return; }
+  saveState(); saveRatings(); renderRankings(); update();
+});
+
+/* ---------- history: shared helpers ---------- */
+const tally=(L,key)=>{ const m={}; L.forEach(p=>{ const k=p[key]; if(k) m[k]=(m[k]||0)+1; }); return m; };
+const topOf=(L,key)=>Object.entries(tally(L,key)).sort((a,b)=>b[1]-a[1])[0]||null;
+const fmtDate=ts=>new Date(ts).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+const SIXTH_KEG=661;
+function glassStatic(key,fill,foamFrac,crown){
+  const g=GLASSES[key]||GLASSES.shaker, id="gs"+(++gid);
+  const H=g.y1-g.y0, top=g.y1-H*fill, fh=Math.min(H*fill,H*foamFrac);
+  return `<svg viewBox="0 -5 40 65" aria-hidden="true"><defs><clipPath id="${id}"><path d="${g.bowl||g.path}"/></clipPath></defs>
+    <path d="${g.path}" fill="var(--frost)" opacity=".45"/>
+    <g clip-path="url(#${id})"><rect x="0" width="40" y="${(top+fh).toFixed(2)}" height="${Math.max(0,g.y1-top-fh).toFixed(2)}" fill="var(--amber)"/><rect x="0" width="40" y="${top.toFixed(2)}" height="${fh.toFixed(2)}" fill="var(--foam)"/></g>
+    <path d="${g.path}" fill="none" stroke="var(--glass)" stroke-width="1.5" stroke-linejoin="round"/>${g.extra?`<path d="${g.extra}" fill="none" stroke="var(--glass)" stroke-width="2.4" stroke-linecap="round"/>`:""}
+    ${crown?`<path d="M${g.noFoam?14:8} ${g.y0+1} C${g.noFoam?14:8} ${g.y0-4} ${g.noFoam?26:32} ${g.y0-4} ${g.noFoam?26:32} ${g.y0+1} C${g.noFoam?24:28} ${g.y0+3} ${g.noFoam?22:26} ${g.y0+6} 21 ${g.y0+5} C19 ${g.y0+7} ${g.noFoam?16:12} ${g.y0+3} ${g.noFoam?14:8} ${g.y0+1} Z" fill="var(--foam)" stroke="var(--glass)" stroke-width=".5"/>`:""}</svg>`;
+}
+const pourGlass=(p,big)=>glassStatic(GLASSES[p.glass]?p.glass:"shaker", Math.min(+p.score||0,200)/200, 0.07, +p.score>=150);
+
+/* ---------- badges ---------- */
+const BADGES=[
+  {id:"first",name:"First Pour",sym:"1",desc:"Log your first pour.",need:1,count:L=>L.length},
+  {id:"explorer",name:"Explorer",sym:"Σ",desc:"Try 10 different beers.",need:10,count:L=>new Set(L.map(p=>p.slug||p.name)).size},
+  {id:"bargain",name:"Bargain Hunter",sym:"β",desc:"Score 150 or more, five times.",need:5,count:L=>L.filter(p=>+p.score>=150).length},
+  {id:"happy",name:"Happy Hour Hero",sym:"$",desc:"Find a beer under $5.",need:1,count:L=>L.filter(p=>+p.price>0&&+p.price<5).length},
+  {id:"goldilocks",name:"Goldilocks",sym:'<span class="ov">f</span>',desc:"Keep a beer near its ideal temperature the whole way.",need:1,count:L=>L.filter(p=>+p.f>=0.95).length},
+  {id:"perfect",name:"Perfect Pours",sym:"μ",desc:"Get ten perfect pours.",need:10,count:L=>L.filter(p=>+p.mu===1).length},
+  {id:"sipper",name:"Slow Sipper",sym:"t",desc:"Take an hour or more over a 16 oz beer, three times.",need:3,count:L=>L.filter(p=>+p.pace>=60).length},
+  {id:"regular",name:"Regular",sym:"n",desc:"Log five pours at the same kind of place.",need:5,count:L=>Math.max(0,...Object.values(tally(L,"venue")))},
+  {id:"globe",name:"Globetrotter",sym:"∀",desc:"Drink at every kind of place.",need:Object.keys(VENUES).length,count:L=>new Set(L.map(p=>p.venue).filter(v=>VENUES[v])).size},
+  {id:"seasons",name:"Four Seasons",sym:"4",desc:"Log a pour in every season.",need:4,count:L=>new Set(L.map(p=>p.season).filter(Boolean)).size},
+  {id:"stein",name:"Stein Lifter",sym:"ℓ",desc:"Drink from a liter stein.",need:1,count:L=>L.filter(p=>p.glass==="stein").length},
+  {id:"connoisseur",name:"Connoisseur",sym:"Π",desc:"Rank 25 beers.",need:25,count:()=>Object.keys(myPiMap()).length},
+  {id:"generous",name:"Generous Soul",sym:"−",desc:"Overpay three times. It happens to everyone.",need:3,count:L=>L.filter(p=>+p.score<60).length},
+  {id:"century",name:"Century",sym:"C",desc:"Log 100 pours.",need:100,count:L=>L.length}
+];
+function badgeStates(L){ return BADGES.map(b=>{ const have=Math.min(b.need,b.count(L)); return {...b,have,earned:have>=b.need}; }); }
+const medal=(b,size)=>`<span class="medal${b.earned?"":" locked"}${size?" "+size:""}" aria-hidden="true"><span>${b.sym}</span></span>`;
+
+/* ---------- history view ---------- */
+let histTab="shelf", shelfSel=null, wYear=null, wIdx=0;
+const HIST_TABS=[["shelf","Shelf"],["badges","Badges"],["wrapped","Wrapped"],["list","List"]];
+function renderHistory(){
+  const el=$("#historyBody");
+  const chrono=[...pours].sort((a,b)=>(a.ts||0)-(b.ts||0));
+  const spent=pours.reduce((a,p)=>a+(+p.total||0),0), oz=pours.reduce((a,p)=>a+(+p.size||0),0);
+  const avg=mean(pours.filter(p=>Number.isFinite(+p.score)).map(p=>+p.score));
+  const earned=badgeStates(pours).filter(b=>b.earned).length;
+  el.innerHTML=`<div class="stats compact">
+      <div class="stat"><div class="k">Pours</div><div class="val">${pours.length}</div></div>
+      <div class="stat"><div class="k">Beer</div><div class="val">${Math.round(oz)}<small> oz</small></div></div>
+      <div class="stat"><div class="k">Spent</div><div class="val">$${Math.round(spent)}</div></div>
+      <div class="stat"><div class="k">Avg score</div><div class="val">${avg===null?"–":Math.round(avg)}</div></div>
+    </div>
+    <div class="seg" role="tablist" aria-label="History views">${HIST_TABS.map(([k,l])=>`<button role="tab" data-ht="${k}" aria-selected="${k===histTab}">${l}${k==="badges"?` <small>${earned}/${BADGES.length}</small>`:""}</button>`).join("")}</div>
+    <div id="histPanel"></div>`;
+  el.querySelector(".seg").addEventListener("click",e=>{ const b=e.target.closest("[data-ht]"); if(!b) return; histTab=b.dataset.ht; renderHistory(); });
+  const panel=$("#histPanel");
+  if(histTab==="shelf") renderShelf(panel,chrono);
+  else if(histTab==="badges") renderBadges(panel);
+  else if(histTab==="wrapped") renderWrapped(panel,chrono);
+  else renderList(panel);
+}
+function emptyNote(t){ return `<div class="pane"><h2>Nothing here yet</h2><p class="lead" style="margin:0">${t}</p></div>`; }
+function renderShelf(panel,chrono){
+  const rows=Math.max(3,Math.ceil(chrono.length/7)+1);
+  panel.innerHTML=`<div class="shelf" style="--rows:${rows}">${chrono.map(p=>`<button type="button" class="sg" data-pour="${esc(p.id)}" aria-pressed="${p.id===shelfSel}" aria-label="${esc(p.name)}, ${fmtDate(p.ts)}, score ${Math.round(+p.score)}">${pourGlass(p)}</button>`).join("")}</div>
+    <p class="hint">${chrono.length?"Each glass is a pour, filled to its score. Foam over the top means 150 or more. Tap a glass to see it.":"Your shelf fills up one glass at a time. Log a pour on the Score tab to put the first one here."}</p>
+    <div id="shelfDetail"></div>`;
+  panel.querySelector(".shelf").addEventListener("click",e=>{ const b=e.target.closest("[data-pour]"); if(!b) return; shelfSel=shelfSel===b.dataset.pour?null:b.dataset.pour;
+    panel.querySelectorAll(".sg").forEach(x=>x.setAttribute("aria-pressed",x.dataset.pour===shelfSel?"true":"false")); renderShelfDetail(); });
+  renderShelfDetail();
+}
+function renderShelfDetail(){
+  const d=$("#shelfDetail"); if(!d) return; const p=pours.find(x=>x.id===shelfSel);
+  if(!p){ d.innerHTML=""; return; }
+  const vd=verdictFor({score:+p.score,piInfo:{pi:+p.pi||0.5}});
+  d.innerHTML=`<div class="pane shelf-card"><div class="sc-glass">${pourGlass(p)}</div>
+    <div><div class="pscore">${Math.round(+p.score)}</div><div class="verdict ${vd.c}" style="margin:0">${vd.t}</div>
+    <h3 class="sc-name">${esc(p.name)}</h3>
+    <p class="bmeta">${fmtDate(p.ts)}, ${esc(VENUES[p.venue]?.label||"")}, ${esc((GLASSES[p.glass]||GLASSES.shaker).label.toLowerCase())}, ${esc(p.size)} oz, ${money(+p.total||0)}</p>
+    <button class="linkish" data-del-pour="${esc(p.id)}">Remove this pour</button></div></div>`;
+}
+function renderBadges(panel){
+  const st=badgeStates(pours);
+  panel.innerHTML=`<div class="badges">${st.map(b=>`<div class="badge${b.earned?" earned":""}">${medal(b)}
+    <div class="bn">${b.name}</div><div class="bd">${b.desc}</div>
+    ${b.earned?`<div class="bdone">Earned</div>`:`<div class="bar-p" role="progressbar" aria-label="${esc(b.name)} progress" aria-valuemin="0" aria-valuemax="${b.need}" aria-valuenow="${b.have}"><span style="width:${100*b.have/b.need}%"></span></div><div class="bp">${b.have} of ${b.need}</div>`}</div>`).join("")}</div>`;
+}
+function renderList(panel){
+  if(!pours.length){ panel.innerHTML=emptyNote("Score a beer and tap “Log this pour” to start your history."); return; }
+  panel.innerHTML=`<ul class="pour-list">${pours.map(p=>`<li><span class="pl-glass">${pourGlass(p)}</span><div><div class="bname">${esc(p.name)}</div>
+    <div class="bmeta">${fmtDate(p.ts)}, ${esc(VENUES[p.venue]?.label||"")}, ${esc(p.size)} oz, ${money(+p.total||0)}</div></div>
+    <span class="pscore" style="color:${+p.score>=110?"var(--good)":+p.score<90?"var(--bad)":"var(--ink)"}">${Math.round(+p.score)}</span>
+    <button class="icon" data-del-pour="${esc(p.id)}" aria-label="Remove ${esc(p.name)} pour">✕</button></li>`).join("")}</ul>`;
+}
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-del-pour]"); if(b){ if(shelfSel===b.dataset.delPour) shelfSel=null; deletePour(b.dataset.delPour); } });
+
+/* ---------- Beer Wrapped ---------- */
+function persona(L){
+  const n=L.length, share=v=>(tally(L,"venue")[v]||0)/n, avgS=mean(L.map(p=>+p.score)), paces=L.map(p=>+p.pace).filter(Number.isFinite);
+  const topB=topOf(L,"name"), distinct=new Set(L.map(p=>p.slug||p.name)).size;
+  if(share("taproom")>=0.4) return ["n","The Taproom Regular","You know the bartenders by name and the tap list by heart."];
+  if(avgS>=120) return ["β","The Bargain Hunter","You find the good stuff at the right price, again and again."];
+  if(n>=5&&topB&&topB[1]/n>=0.4) return ["1","The Loyalist","You found your beer, and you stuck with it."];
+  if(n>=5&&distinct/n>=0.7) return ["Σ","The Explorer","Rarely the same beer twice. The menu is a to-do list."];
+  if(paces.length&&mean(paces)>=50) return ["t","The Slow Sipper","Every beer gets your full, unhurried attention."];
+  if(share("stadium")+share("club")>=0.4) return ["∀","The Crowd Lover","Your beers come with a soundtrack and a scoreboard."];
+  if(avgS<80) return ["−","The Generous Soul","The bars are very glad you came."];
+  return ["≈","The Steady Sipper","Balanced, reliable, and always up for the math."];
+}
+function wrappedCards(L,year){
+  const n=L.length, oz=L.reduce((a,p)=>a+(+p.size||0),0), pints=oz/16, spent=L.reduce((a,p)=>a+(+p.total||0),0);
+  const best=L.reduce((a,p)=>!a||+p.score>+a.score?p:a,null), worst=L.reduce((a,p)=>!a||+p.score<+a.score?p:a,null);
+  const topB=topOf(L,"name"), topV=topOf(L,"venue"), topS=topOf(L,"season");
+  const delta=L.reduce((a,p)=>a+(+p.price||0)*((+p.score||0)/100-1),0);
+  const byV={}; L.forEach(p=>{ (byV[p.venue] ||= []).push(+p.score); });
+  const bestV=Object.entries(byV).filter(([,a])=>a.length>=2).map(([v,a])=>[v,mean(a)]).sort((a,b)=>b[1]-a[1])[0];
+  const fAvg=mean(L.map(p=>+p.f).filter(Number.isFinite));
+  const yearBadges=badgeStates(L).filter(b=>b.earned);
+  const pers=persona(L);
+  const kegTxt = oz>=SIXTH_KEG ? `That’s ${(oz/SIXTH_KEG).toFixed(1)} sixth-barrel kegs.` : `That’s ${Math.round(100*oz/SIXTH_KEG)}% of a sixth-barrel keg.`;
+  const pintRow=Array.from({length:Math.min(24,Math.max(1,Math.round(pints)))},()=>glassStatic("shaker",1,0.08,false)).join("");
+  const vLabel=v=>esc(VENUES[v]?.label||v);
+  return [
+    {c:"w-ink",h:`<p class="wk wa">Your ${year} in beer</p><div><div class="wbig wa">${n}</div><p class="wt wa">pours logged and scored</p></div>
+      <div class="wshelf wa">${L.slice(-8).map(p=>pourGlass(p)).join("")}</div>`},
+    {c:"w-amber",h:`<p class="wk wa">You drank</p><div><div class="wbig wa">${Math.round(oz)}</div><p class="wt wa">ounces of beer, or ${pints.toFixed(1)} pints. ${kegTxt}</p></div>
+      <div class="wpints wa">${pintRow}${pints>24.5?`<span>+${Math.round(pints)-24}</span>`:""}</div>`},
+    {c:"w-foam",h:`<p class="wk wa">Your most-poured beer</p><div><div class="wname wa">${esc(topB[0])}</div><p class="wt wa">${topB[1]} pour${topB[1]>1?"s":""} this year.</p></div>
+      <p class="ws wa">${new Set(L.map(p=>p.slug||p.name)).size} different beers in all.</p>`},
+    {c:"w-amber",h:`<p class="wk wa">Your best deal</p><div class="wbest"><div class="wglass wa">${pourGlass(best)}</div><div><div class="wbig wa">${Math.round(best.score)}</div>
+      <p class="wt wa">${esc(best.name)}</p><p class="ws wa">${fmtDate(best.ts)}, ${vLabel(best.venue)}</p></div></div>
+      <p class="ws wa">Your toughest one was ${esc(worst.name)} at ${Math.round(worst.score)}.</p>`},
+    {c:"w-ink",h:`<p class="wk wa">All in, you spent</p><div><div class="wbig wa">$${Math.round(spent)}</div><p class="wt wa">${money(spent/n)} per pour, tip included.</p></div>
+      <p class="ws wa">${delta>=0?`You got <b>${money(delta)}</b> more beer value than the menu prices you paid.`:`You paid <b>${money(-delta)}</b> more than your beers were worth to you.`}</p>`},
+    {c:"w-foam",h:`<p class="wk wa">Your spot</p><div><div class="wname wa">${vLabel(topV[0])}</div><p class="wt wa">${topV[1]} of your ${n} pours.</p></div>
+      <p class="ws wa">${bestV?`Best value: ${vLabel(bestV[0])}, averaging ${Math.round(bestV[1])}.`:`Log a couple more at each place to find your best value.`}</p>`},
+    {c:"w-khaki",h:`<p class="wk wa">Temperature check</p><div><div class="wbig wa">${fAvg===null?"–":Math.round(fAvg*100)+"%"}</div><p class="wt wa">average <span class="m ov">f</span>: how close your beers stayed to their sweet spot.</p></div>
+      <p class="ws wa">${topS?`You drank most in ${topS[0]}.`:""} ${fAvg!==null&&fAvg<0.7?"Try letting stronger beers warm up a few minutes first.":"Nicely done."}</p>`},
+    {c:"w-foam",h:`<p class="wk wa">Badges this year</p><div><div class="wbig wa">${yearBadges.length}</div><p class="wt wa">of ${BADGES.length} earned</p></div>
+      <div class="wmedals wa">${yearBadges.slice(0,8).map(b=>medal(b,"sm")).join("")||`<span class="ws">Your first badge is one pour away.</span>`}</div>`},
+    {c:"w-amber",h:`<p class="wk wa">Your drinking persona</p><div class="wpers">${medal({sym:pers[0],earned:true},"lg wa")}<div class="wname wa">${pers[1]}</div><p class="wt wa">${pers[2]}</p></div>
+      <p class="ws wa">Cheers to ${year}.</p>`}
+  ];
+}
+function renderWrapped(panel,chrono){
+  const years=[...new Set(chrono.map(p=>new Date(p.ts).getFullYear()))].sort((a,b)=>b-a);
+  const now=new Date().getFullYear();
+  if(wYear===null) wYear=years[0]||now;
+  if(!years.includes(wYear)&&years.length) wYear=years[0];
+  const L=chrono.filter(p=>new Date(p.ts).getFullYear()===wYear);
+  const need=3;
+  const yearChips=years.length>1?`<div class="chips" style="margin-bottom:14px">${years.map(y=>`<button class="chip" data-wy="${y}" aria-pressed="${y===wYear}">${y}</button>`).join("")}</div>`:"";
+  if(L.length<need){
+    panel.innerHTML=yearChips+`<div class="wrapped"><div class="wcard w-ink"><p class="wk">Beer Wrapped ${wYear}</p><div><div class="wbig">${L.length}/${need}</div><p class="wt">Log ${need-L.length} more pour${need-L.length>1?"s":""} this year to unlock your Wrapped.</p></div><div class="wshelf">${L.map(p=>pourGlass(p)).join("")}</div></div></div>`;
+  } else {
+    const cards=wrappedCards(L,wYear); wIdx=Math.max(0,Math.min(cards.length-1,wIdx)); const c=cards[wIdx];
+    panel.innerHTML=yearChips+`<div class="wrapped">
+      <div class="wcard ${c.c} enter" id="wcard" tabindex="0" aria-roledescription="slide" aria-label="Card ${wIdx+1} of ${cards.length}">
+        <div class="wprog" aria-hidden="true">${cards.map((_,i)=>`<span class="${i<=wIdx?"on":""}"></span>`).join("")}</div>${c.h}</div>
+      <div class="wnav"><button class="btn small secondary" id="wPrev" ${wIdx===0?"disabled":""}>Back</button><span class="ws">${wIdx+1} of ${cards.length}</span><button class="btn small" id="wNext">${wIdx===cards.length-1?"Start over":"Next"}</button></div></div>`;
+    const card=$("#wcard"); card.querySelectorAll(".wa").forEach((n,i)=>n.style.animationDelay=(i*90)+"ms");
+    const goW=d=>{ wIdx=(wIdx+d+cards.length)%cards.length; renderWrapped(panel,chrono); $("#wcard")?.focus({preventScroll:true}); };
+    $("#wPrev").addEventListener("click",()=>{ if(wIdx>0) goW(-1); });
+    $("#wNext").addEventListener("click",()=>goW(1));
+    let sx=null;
+    card.addEventListener("pointerdown",e=>{ sx=e.clientX; });
+    card.addEventListener("pointerup",e=>{ if(sx===null) return; const dx=e.clientX-sx; sx=null;
+      if(Math.abs(dx)>40){ if(dx<0) goW(1); else if(wIdx>0) goW(-1); return; }
+      const r=card.getBoundingClientRect(); if(e.clientX-r.left<r.width*0.33){ if(wIdx>0) goW(-1); } else goW(1); });
+    card.addEventListener("keydown",e=>{ if(e.key==="ArrowRight") goW(1); if(e.key==="ArrowLeft"&&wIdx>0) goW(-1); });
+  }
+  panel.querySelectorAll("[data-wy]").forEach(b=>b.addEventListener("click",()=>{ wYear=+b.dataset.wy; wIdx=0; renderWrapped(panel,chrono); }));
+}
+
+function logPour(){
+  const r=lastResult; if(!r||r.score===null||!calc.name.trim()) return;
+  const p={ts:Date.now(), slug:calc.slug, name:calc.name.trim().slice(0,120), abv:Number.isFinite(r.abv)?r.abv:null,
+    venue:calc.venue, season:calc.season, glass:calc.glass, frosted:calc.frosted, pace:+S.settings.pace, size:r.V, price:r.price, tip:+S.settings.tip, total:Math.round(r.y*100)/100,
+    pi:+r.piInfo.pi.toFixed(3), mu:r.mu, f:+r.fbar.toFixed(3), score:Math.round(r.score*10)/10};
+  if(!S.beers[calc.slug]&&!catalog[calc.slug]) catalog[calc.slug]={name:p.name, abv:calc.abv};
+  ensureCatalog(calc.slug,{name:p.name, abv:calc.abv});
+  const before=new Set(badgeStates(pours).filter(b=>b.earned).map(b=>b.id));
+  const newBadges=badgeStates([...pours,p]).filter(b=>b.earned&&!before.has(b.id));
+  const count=pours.length+1;
+  addPour(p);
+  celebrate(p, r, count, newBadges);
+}
+let chTimer=null, chReturn=null;
+function countUp(el,to,ms){
+  cancelAnimationFrame(el._raf);
+  if(reduceMotion()){ el.textContent=to; return; }
+  const t0=performance.now();
+  const tick=now=>{ const k=Math.min(1,(now-t0)/ms), e=1-Math.pow(1-k,3); el.textContent=Math.round(to*e); if(k<1) el._raf=requestAnimationFrame(tick); };
+  el._raf=requestAnimationFrame(tick);
+}
+function celebrate(p,r,count,newBadges=[]){
+  const ov=$("#cheers"), gl=$("#chGlass"), G=GLASSES[calc.glass], score=Math.round(p.score);
+  chReturn=document.activeElement;
+  gl.dataset.g=""; mountGlass(gl,calc.glass); setLevel(gl,0,0.08);
+  const fill=Math.min(p.score,200)/200, rise=-(G.y1-G.y0)*fill*0.9;
+  gl.querySelector(".bubbles").innerHTML=Array.from({length:10},(_,i)=>`<circle class="bubble" cx="${(16+Math.random()*8).toFixed(1)}" cy="${G.y1-1.5}" r="${(0.5+Math.random()*0.6).toFixed(2)}" style="--rise:${rise.toFixed(1)}px;animation-delay:${(0.5+i*0.17).toFixed(2)}s"/>`).join("");
+  gl.querySelector("svg").insertAdjacentHTML("beforeend",`<ellipse class="crown" cx="20" cy="${G.y0+0.5}" rx="${G.noFoam?6:13}" ry="3.6" fill="var(--foam)"/>`);
+  const vd=verdictFor(r);
+  $("#chNum").textContent="0";
+  const cv=$("#chVerdict"); cv.textContent=""; cv.className="ch-verdict "+vd.c;
+  $("#chTitle").textContent=`${p.name} logged`;
+  $("#chSub").textContent=`That’s pour number ${count}.${r.breakEven>0.005?` For you, it was worth up to ${money(r.breakEven)}.`:""}`;
+  const cb=$("#chBadge"); cb.hidden=!newBadges.length;
+  cb.innerHTML=newBadges.length?`${medal(newBadges[0],"sm")}<span><b>New badge${newBadges.length>1?"s":""}:</b> ${newBadges.map(b=>esc(b.name)).join(", ")}</span>`:"";
+  cb.classList.remove("pop");
+  ov.classList.remove("on","great"); ov.hidden=false;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add("on")));
+  const ms=reduceMotion()?0:1400;
+  setTimeout(()=>{ tweenLevel(gl,fill,0.08,ms); countUp($("#chNum"),score,ms); },reduceMotion()?0:220);
+  setTimeout(()=>{ cv.textContent=vd.t; if(p.score>=150) ov.classList.add("great"); if(newBadges.length) cb.classList.add("pop"); },ms+260);
+  $("#chClose").focus({preventScroll:true});
+  clearTimeout(chTimer); chTimer=setTimeout(closeCheers,7000);
+  $("#barVerdict").textContent="Logged";
+}
+function closeCheers(){
+  const ov=$("#cheers"); if(ov.hidden) return;
+  clearTimeout(chTimer); ov.classList.remove("on");
+  setTimeout(()=>{ ov.hidden=true; ov.classList.remove("great"); update(); },reduceMotion()?0:200);
+  if(chReturn&&document.contains(chReturn)) chReturn.focus({preventScroll:true});
+}
+$("#chClose").addEventListener("click",closeCheers);
+$("#cheers").addEventListener("click",e=>{ if(e.target.id==="cheers") closeCheers(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("#cheers").hidden) closeCheers(); if(e.key==="Tab"&&!$("#cheers").hidden){ e.preventDefault(); $("#chClose").focus(); } });
+
+/* ---------- the magic document ---------- */
+const I = s => `<i>${s}</i>`;
+function renderDoc(){
+  const venueRows=Object.values(VENUES).map(v=> v.indoor
+    ? `<tr><td>${v.label}</td><td>${v.base - v.swing}</td><td>${v.base}</td><td>${v.base + v.swing}</td><td>${v.base}</td><td>${v.serve}</td></tr>`
+    : `<tr><td>${v.label}</td><td>${v.temps.winter}</td><td>${v.temps.spring}</td><td>${v.temps.summer}</td><td>${v.temps.fall}</td><td>${v.serve}</td></tr>`).join("");
+  const glassRows=Object.values(GLASSES).map(g=>`<tr><td>${g.label}</td><td>${g.k.toFixed(3)}</td><td>${Math.round(Math.LN2/g.k)} min</td><td>${Math.round(Math.LN2/(2*g.k))} min</td></tr>`).join("");
+  const capRows=Object.values(GLASSES).map(g=>`<tr><td>${g.label}</td><td>${g.cap} oz</td></tr>`).join("");
+  const foamRows=FOAMS.map(([v,l])=>`<tr><td>${l}</td><td>${f2(v)}</td><td>${halfRound(16*(1-v))} oz</td></tr>`).join("");
+  const fRows=[0,2,4,6,8,10,12,16].map(d=>`<tr><td>${d}°F</td><td>${fOf(d,0).toFixed(2)}</td></tr>`).join("");
+  const nRows=[1,3,5,10,20,50,100].map(n=>`<tr><td>${n}</td><td>${Math.round(100*n/(n+PRIOR_M))}%</td><td>${Math.round(100*PRIOR_M/(n+PRIOR_M))}%</td></tr>`).join("");
+  const abvRows=[3.5,4,5,6,7,8,10,12].map(a=>`<tr><td>${a}%</td><td>${idealFor(a)}°F</td></tr>`).join("");
+  $("#doc").innerHTML=`
+  <h2>See the magic</h2>
+  <p class="lede">Everything Pour Score works out behind the scenes, from the room temperature to the people whose taste matches yours.</p>
+  <nav class="toc" aria-label="Contents">
+    <a href="#magic" data-jump="d-live">Your pour</a><a href="#magic" data-jump="d-score">The score</a><a href="#magic" data-jump="d-vol">Volume</a><a href="#magic" data-jump="d-pi">Quality</a>
+    <a href="#magic" data-jump="d-crowd">Unranked beers</a><a href="#magic" data-jump="d-cost">Cost</a><a href="#magic" data-jump="d-temp">Temperature</a>
+    <a href="#magic" data-jump="d-taste">Enjoyment</a><a href="#magic" data-jump="d-extra">The rest</a>
+  </nav>
+
+  <h3 id="d-live">Your pour, worked out</h3>
+  <p>These update live with whatever is on the Score tab.</p>
+  <div class="worked" id="worked"></div>
+
+  <h3 id="d-score">The score</h3>
+  <p>The core ratio is how much good beer you get per dollar:</p>
+  <div class="eqn">${I("β")} = ${fr(`${I("V")} · ${I("Π")} · ${I("μ")} · <i class="ov">f</i> · ${I("s")}`, I("y"))}</div>
+  <p>${I("V")} is ounces of beer, ${I("Π")} is how good it is to you, ${I("μ")} is how well it was poured, <i class="ov">f</i> is how close to the right temperature it stayed, ${I("s")} is an optional strength factor, and ${I("y")} is what you paid.</p>
+  <p>On its own, ${I("β")} comes out in odd units, quality-weighted ounces per dollar. So it’s compared with a benchmark beer that scores exactly 100:</p>
+  <div class="eqn">${I("β")}<sub>0</sub> = ${fr("16 · 0.50 · 1.00 · 0.80","7.00 · (1 + 0.20)")} = ${fr("6.4","8.40")} ≈ ${REF.toFixed(3)}</div>
+  <div class="eqn">score = 100 · ${fr(I("β"),`${I("β")}<sub>0</sub>`)}</div>
+  <p>That benchmark is a 16 oz beer in the middle of your rankings, poured well, at a typical temperature, for $7 plus a 20% tip. A score of 200 means twice as much good beer per dollar as that, and 50 means half.</p>
+  <div class="tw"><table><thead><tr><th>Score</th><th>Verdict</th></tr></thead><tbody>
+    <tr><td>150 or more</td><td>Great deal</td></tr><tr><td>110 to 149</td><td>Good deal</td></tr><tr><td>90 to 109</td><td>Fair price</td></tr><tr><td>60 to 89</td><td>A bit steep</td></tr><tr><td>Under 60</td><td>Overpaid</td></tr></tbody></table></div>
+
+  <h3 id="d-vol">How much beer you got</h3>
+  <p>Most people don’t know how many ounces are in front of them, but they do know what the glass looks like. Each glass has a typical capacity ${I("C")}, and foam takes up a fraction ${I("φ")} of it:</p>
+  <div class="eqn">${I("V")} = ${I("C")} (1 − ${I("φ")}) <span class="tag">rounded to the nearest half ounce</span></div>
+  <div class="tw"><table><thead><tr><th>Foam on top</th><th>${I("φ")}</th><th>Beer in a 16 oz pint</th></tr></thead><tbody>${foamRows}</tbody></table></div>
+  <div class="tw"><table><thead><tr><th>Glass</th><th>Capacity ${I("C")}</th></tr></thead><tbody>${capRows}</tbody></table></div>
+  <p>Cans and bottles hold exactly what the label says, so they skip the foam step. If you know the exact amount, it replaces the estimate.</p>
+
+  <h3 id="d-pi">Quality from your rankings</h3>
+  <p>Every beer you rank goes into one of five tiers, and each tier owns a slice of the 0 to 1 scale:</p>
+  <div class="tw"><table><thead><tr><th>Tier</th><th>Range of ${I("Π")}</th></tr></thead><tbody>
+    ${TIER_ORDER.map(t=>`<tr><td>${TIERS[t].label}</td><td>${f2(TIERS[t].lo)} to ${f2(TIERS[t].hi)}</td></tr>`).join("")}</tbody></table></div>
+  <p>Inside a tier with ${I("n")} beers, the beer at position ${I("i")} (counting from 0 at the top) is spread evenly across the slice:</p>
+  <div class="eqn">${I("Π")}<sub>${I("i")}</sub> = ${I("Π")}<sub>hi</sub> − ${I("i")} · ${fr(`${I("Π")}<sub>hi</sub> − ${I("Π")}<sub>lo</sub>`,`${I("n")} − 1`)}</div>
+  <p>A tier with only one beer puts it in the middle, ${fr(`${I("Π")}<sub>lo</sub> + ${I("Π")}<sub>hi</sub>`,"2")}.</p>
+  <p>To place a new beer inside a tier, the app asks “which did you like more?” and halves the list each time. That’s a binary search, so a tier of ${I("n")} beers takes at most ⌈log<sub>2</sub>(${I("n")} + 1)⌉ questions: 3 questions for 7 beers, 5 for 31.</p>
+  <p>Because the scale comes from your own order, a harsh ranker’s 0.9 means the same thing as a generous ranker’s 0.9. That’s what makes comparing people fair in the next section.</p>
+
+  <h3 id="d-crowd">Beers you haven’t ranked</h3>
+  <h4>Your starting point</h4>
+  <p>With no other information, a new beer starts at your own average:</p>
+  <div class="eqn">${I("Π")}<sub>0</sub> = ${fr("1",I("N"))} <span class="sum"><span class="s">Σ</span><small>${I("j")}</small></span> ${I("Π")}<sub>${I("j")}</sub> <span class="tag">or 0.50 if you haven’t ranked anything</span></div>
+  <h4>Finding people with your taste</h4>
+  <p>For each other drinker ${I("v")} who has ranked at least 3 of the same beers as you (${I("u")}), the app measures how closely your rankings move together with a Pearson correlation over those shared beers:</p>
+  <div class="eqn">${I("r")}<sub>${I("uv")}</sub> = ${fr(`Σ (${I("Π")}<sub>${I("u")},${I("j")}</sub> − <i class="ov">Π</i><sub>${I("u")}</sub>)(${I("Π")}<sub>${I("v")},${I("j")}</sub> − <i class="ov">Π</i><sub>${I("v")}</sub>)`,`√(Σ (${I("Π")}<sub>${I("u")},${I("j")}</sub> − <i class="ov">Π</i><sub>${I("u")}</sub>)² · Σ (${I("Π")}<sub>${I("v")},${I("j")}</sub> − <i class="ov">Π</i><sub>${I("v")}</sub>)²)`)}</div>
+  <p>${I("r")} runs from −1 (opposite taste) to +1 (identical taste). Agreeing on 3 beers could be luck, so the correlation is shrunk by how much overlap there is:</p>
+  <div class="eqn">${I("s")}<sub>${I("uv")}</sub> = ${I("r")}<sub>${I("uv")}</sub> · ${fr(`${I("k")}<sub>${I("uv")}</sub>`,`${I("k")}<sub>${I("uv")}</sub> + 5`)} <span class="tag">${I("k")} = beers in common</span></div>
+  <p>Anyone with |${I("s")}| under 0.1 is ignored. Then their opinions are combined, each measured against their own average so generous and harsh rankers count equally:</p>
+  <div class="eqn">${I("Π")}<sub>sim</sub> = <i class="ov">Π</i><sub>${I("u")}</sub> + ${fr(`Σ ${I("s")}<sub>${I("uv")}</sub> (${I("Π")}<sub>${I("v")},${I("b")}</sub> − <i class="ov">Π</i><sub>${I("v")}</sub>)`,`Σ |${I("s")}<sub>${I("uv")}</sub>|`)}</div>
+  <p>Someone with opposite taste (negative ${I("s")}) still helps: if they loved it, that counts against it for you. This estimate is used when at least 2 similar drinkers exist and their weights add up to at least 0.3. Otherwise the plain average of everyone who ranked it, <i class="ov">Π</i>, is used instead.</p>
+  <h4>How much to trust the crowd</h4>
+  <p>A beer with two rankings shouldn’t count as much as one with two hundred. The crowd’s answer is blended with your starting point, as if your average were worth ${PRIOR_M} extra rankings:</p>
+  <div class="eqn">${I("Π")}<sub>est</sub> = ${fr(`${I("n")} · ${I("Π")}<sub>crowd</sub> + ${PRIOR_M} · ${I("Π")}<sub>0</sub>`,`${I("n")} + ${PRIOR_M}`)}</div>
+  <div class="tw"><table><thead><tr><th>People who ranked it (${I("n")})</th><th>Weight on them</th><th>Weight on your average</th></tr></thead><tbody>${nRows}</tbody></table></div>
+
+  <h3 id="d-cost">Cost and break-even</h3>
+  <p>Tip is a percentage of the menu price:</p>
+  <div class="eqn">${I("y")} = ${I("p")}(1 + ${I("τ")})</div>
+  <p>Setting the score to 100 and solving for ${I("p")} gives the most you could pay and still get an average deal. That’s the “worth up to” price:</p>
+  <div class="eqn">100 · ${fr(`${I("V")} · ${I("Π")} · ${I("μ")} · <i class="ov">f</i> · ${I("s")}`,`${I("p")}(1 + ${I("τ")}) · ${I("β")}<sub>0</sub>`)} = 100 &nbsp;⟹&nbsp; ${I("p")}* = ${fr(`${I("V")} · ${I("Π")} · ${I("μ")} · <i class="ov">f</i> · ${I("s")}`,`${I("β")}<sub>0</sub> (1 + ${I("τ")})`)}</div>
+
+  <h3 id="d-temp">How your beer warms up</h3>
+  <p>A cold beer in a warm room heats up in proportion to the gap between them. That’s Newton’s law of cooling:</p>
+  <div class="eqn">${fr(`${I("dT")}`,`${I("dt")}`)} = −${I("k")} (${I("T")} − ${I("T")}<sub>r</sub>)</div>
+  <p>Solving it gives the beer’s temperature ${I("t")} minutes after the pour:</p>
+  <div class="eqn">${I("T")}(${I("t")}) = ${I("T")}<sub>r</sub> − (${I("T")}<sub>r</sub> − ${I("T")}<sub>0</sub>) ${I("e")}<sup>−${I("kt")}</sup></div>
+  <p>The gap between beer and room shrinks exponentially. It halves every ${fr("ln 2",I("k"))} minutes, which is a handy way to read ${I("k")}:</p>
+  <div class="tw"><table><thead><tr><th>Glass</th><th>${I("k")} per minute</th><th>Gap halves in</th><th>In direct sun</th></tr></thead><tbody>${glassRows}</tbody></table></div>
+  <p>The glass you pick on the Pour step sets ${I("k")}. Thick walls and big volumes warm slowly, while thin stemmed glasses held in your hand warm fast. Outdoors in direct sun, ${I("k")} doubles.</p>
+  <h4>Room temperature, ${I("T")}<sub>r</sub></h4>
+  <p>Nobody knows the exact room temperature, so it comes from the place and the season. Indoor places shift a little with the season (${I("T")}<sub>r</sub> = base + δ · swing, with δ = −1 in winter, +1 in summer and 0 otherwise). Outdoor places follow typical outdoor temperatures.</p>
+  <div class="tw"><table><thead><tr><th>Place</th><th>Winter</th><th>Spring</th><th>Summer</th><th>Fall</th><th>Poured at, ${I("T")}<sub>0</sub></th></tr></thead><tbody>${venueRows}</tbody></table></div>
+  <p>A frosted glass lowers the pour temperature by 4°F. All temperatures are in °F.</p>
+
+  <h3 id="d-taste">Enjoyment and the ideal temperature</h3>
+  <p>Each beer has a sweet spot, ${I("T")}*. Stronger beers carry more flavor that cold mutes, so the ideal rises with ABV (${I("a")}), kept within a sensible range:</p>
+  <div class="eqn">${I("T")}* = min(${T_MAX}, max(${T_MIN}, 30 + 3${I("a")})) <span class="tag">${T_DEFAULT}°F if ABV is unknown</span></div>
+  <div class="tw"><table><thead><tr><th>ABV</th><th>${I("T")}*</th></tr></thead><tbody>${abvRows}</tbody></table></div>
+  <p>How much you enjoy the beer at any moment is a bell curve around ${I("T")}*, with ${I("σ")} = ${SIGMA}°F setting how forgiving it is:</p>
+  <div class="eqn">${I("f")}(${I("T")}) = ${I("e")}<sup>−((${I("T")} − ${I("T")}*)/${I("σ")})²</sup></div>
+  <div class="tw"><table><thead><tr><th>Degrees from ideal</th><th>${I("f")}</th></tr></thead><tbody>${fRows}</tbody></table></div>
+  <p>The beer changes temperature the whole time you drink it, so the score uses the average enjoyment across your drinking time ${I("t")}<sub>d</sub>:</p>
+  <div class="eqn"><i class="ov">f</i> = ${fr("1",`${I("t")}<sub>d</sub>`)} <span class="int"><span class="s">∫</span><span class="lim"><span>${I("t")}<sub>d</sub></span><span>0</span></span></span> ${I("f")}(${I("T")}(${I("t")})) ${I("dt")}</div>
+  <p>This integral has no tidy closed form, so the app samples it at the middle of ${I("N")} equal slices (the midpoint rule), with ${I("N")} = max(20, ${I("t")}<sub>d</sub>):</p>
+  <div class="eqn"><i class="ov">f</i> ≈ ${fr("1",I("N"))} <span class="sum"><span class="s">Σ</span><small>${I("i")}=0…${I("N")}−1</small></span> ${I("f")}(${I("T")}((${I("i")} + ½) ${fr(`${I("t")}<sub>d</sub>`,I("N"))}))</div>
+  <p>This is why a stout poured too cold can score better for a slow drinker, while a light lager does best when you drink it quickly.</p>
+
+  <h3 id="d-extra">The rest</h3>
+  <h4>Drinking time</h4>
+  <p>Your pace slider is minutes per 16 oz, so a bigger pour takes proportionally longer:</p>
+  <div class="eqn">${I("t")}<sub>d</sub> = pace · ${fr(I("V"),"16")}</div>
+  <h4>Pour quality, ${I("μ")}</h4>
+  <div class="tw"><table><thead><tr><th>Pour</th><th>${I("μ")}</th></tr></thead><tbody>${POURS_MU.map(([v,l])=>`<tr><td>${l}</td><td>${f2(v)}</td></tr>`).join("")}</tbody></table></div>
+  <h4>Strength, ${I("s")}</h4>
+  <p>When “count alcohol strength” is on, beers are scaled against a 5% baseline, so an 8% beer counts as 1.6 beers:</p>
+  <div class="eqn">${I("s")} = ${fr(I("a"),"5")} <span class="tag">otherwise ${I("s")} = 1</span></div>
+  <h4>The glass on the Score tab</h4>
+  <p>The glass matches the one you picked and fills in proportion to your score: full at 200, half full at an average deal of 100. Score 150 or more when you log a pour and the foam spills over the top.</p>`;
+  $("#doc").querySelectorAll("[data-jump]").forEach(a=>a.addEventListener("click",e=>{ e.preventDefault(); document.getElementById(a.dataset.jump)?.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}); }));
+  renderWorked();
+}
+function renderWorked(){
+  const el=$("#worked"); if(!el) return;
+  const r=lastResult||compute(), p=r.piInfo, e=r.env, tdR=Math.round(r.td), sT=r.strength!==1;
+  const nameTxt=calc.name.trim()?esc(calc.name.trim()):"your beer";
+  let piBlock;
+  if(p.source==="yours"){ const q=p.pos, T=TIERS[q.t];
+    piBlock = q.n===1 ? mb(`${I("Π")} = ${fr(`${f2(T.lo)} + ${f2(T.hi)}`,"2")} = <span class="res">${f2(p.pi)}</span>`)
+      : mb(`${I("Π")} = ${f2(T.hi)} − ${q.i} · ${fr(`${f2(T.hi)} − ${f2(T.lo)}`,`${q.n} − 1`)} = <span class="res">${f2(p.pi)}</span>`);
+    piBlock = `<div class="cap">Quality: #${q.i+1} of ${q.n} in “${T.label}”</div>`+piBlock;
+  } else if(p.source==="crowd"||p.source==="similar"){
+    piBlock = `<div class="cap">Quality: estimated from ${p.n} other drinker${p.n>1?"s":""}${p.source==="similar"?`, ${p.simCount} with similar taste`:""}</div>`
+      + mb(`${I("Π")}<sub>est</sub> = ${fr(`${p.n} · ${f2(p.signal)} + ${PRIOR_M} · ${f2(p.prior.v)}`,`${p.n} + ${PRIOR_M}`)} = <span class="res">${f2(p.pi)}</span>`);
+  } else piBlock = `<div class="cap">Quality: nobody has ranked ${nameTxt} yet, so it uses ${p.prior.why}</div>`+mb(`${I("Π")} = ${I("Π")}<sub>0</sub> = <span class="res">${f2(p.pi)}</span>`);
+  const numSym=`${I("V")} · ${I("Π")} · ${I("μ")} · <i class="ov">f</i>${sT?` · ${I("s")}`:""}`;
+  const numVal=`${r.V} · ${f2(p.pi)} · ${f2(r.mu)} · ${f2(r.fbar)}${sT?` · ${f2(r.strength)}`:""}`;
+  const bt=r.beta===null?"–":r.beta.toFixed(3);
+  el.innerHTML = piBlock
+    + `<div class="cap">Ideal temperature for ${nameTxt}</div>` + mb(`${I("T")}* = ${Number.isFinite(r.abv)?`30 + 3 · ${r.abv}`:"default"} = <span class="res">${r.ideal}°F</span>`)
+    + `<div class="cap">Warming curve</div>` + mb(`${I("T")}(${I("t")}) = ${Math.round(e.room)} − (${Math.round(e.room)} − ${Math.round(e.serve)}) ${I("e")}<sup>−${e.k.toFixed(3)}${I("t")}</sup>`)
+    + `<div class="cap">Average enjoyment over ${tdR} minutes</div>` + mb(`<i class="ov">f</i> = ${fr("1",tdR)} <span class="int"><span class="s">∫</span><span class="lim"><span>${tdR}</span><span>0</span></span></span> ${I("e")}<sup>−((${I("T")}(${I("t")}) − ${r.ideal})/${SIGMA})²</sup> ${I("dt")} = <span class="res">${f2(r.fbar)}</span>`)
+    + `<div class="cap">Cost</div>` + mb(`${I("y")} = ${f2(r.price)} · (1 + ${f2(r.tau)}) = <span class="res">${f2(r.y)}</span>`)
+    + `<div class="cap">Value per dollar</div>` + mb(`${I("β")} = ${fr(numSym,I("y"))}<span class="cont">= ${fr(numVal,f2(r.y))} = <span class="res">${bt}</span></span>`)
+    + `<div class="cap">Score</div>` + mb(`100 · ${fr(bt,REF.toFixed(3))} = <span class="res hl">${r.score===null?"–":Math.round(r.score)}</span>`)
+    + `<div class="cap">Worth up to</div>` + mb(`${I("p")}* = ${fr(f2(r.value),`${REF.toFixed(3)} · ${f2(1+r.tau)}`)} = <span class="res">${money(Math.max(0,r.breakEven))}</span>`);
+}
+
+/* ---------- navigation ---------- */
+const VIEWS=["score","rankings","history","magic"];
+let docBuilt=false;
+function go(view,push=true){
+  if(!VIEWS.includes(view)) view="score";
+  document.querySelectorAll(".view").forEach(v=>v.hidden=v.id!==view);
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.view===view?"true":"false"));
+  document.body.classList.toggle("on-score",view==="score");
+  if(push&&location.hash!=="#"+view) location.hash=view;
+  if(view==="rankings") renderRankings();
+  if(view==="history") renderHistory();
+  if(view==="magic"){ if(!docBuilt){ renderDoc(); docBuilt=true; } else renderWorked(); }
+}
+document.querySelector("nav.tabs").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b){ go(b.dataset.view); window.scrollTo({top:0}); } });
+window.addEventListener("hashchange",()=>go(location.hash.slice(1),false));
+
+/* ---------- storage ---------- */
+let storeMode="local", db=null, uid=null, stateRef=null, poursCol=null, ratingsRef=null, readOnly=false;
+const LKEY="pourscore:state", PKEY="pourscore:pours";
+function setStatus(t,warn){ const s=$("#status"); s.textContent=t; s.classList.toggle("warn",!!warn); }
+function loadLocal(){
+  try{ const raw=localStorage.getItem(LKEY); if(raw) mergeState(JSON.parse(raw)); }catch{}
+  try{ const raw=localStorage.getItem(PKEY); if(raw){ const a=JSON.parse(raw); if(Array.isArray(a)) pours=a; } }catch{}
+}
+function mergeState(d){
+  if(!d||typeof d!=="object") return;
+  if(d.beers&&typeof d.beers==="object") S.beers=d.beers;
+  if(d.tiers&&typeof d.tiers==="object"){
+    const arr=k=>Array.isArray(d.tiers[k])?d.tiers[k].filter(s=>typeof s==="string"):[];
+    for(const t of TIER_ORDER) S.tiers[t]=arr(t);
+    if(Array.isArray(d.tiers.fine)) S.tiers.liked=[...S.tiers.liked,...arr("fine")]; // older three-tier rankings
+  }
+  if(d.settings&&typeof d.settings==="object"){
+    const st=d.settings;
+    if(Number.isFinite(+st.pace)) S.settings.pace=+st.pace;
+    if(typeof st.strength==="boolean") S.settings.strength=st.strength;
+    const tip=typeof st.tip==="string" ? (st.tip.endsWith("%")?parseFloat(st.tip):20) : +st.tip;
+    if(Number.isFinite(tip)) S.settings.tip=tip;
+  }
+}
+function snapshotState(){ return {beers:S.beers, tiers:S.tiers, settings:S.settings, updatedAt:Date.now()}; }
+function makeWriter(getRef){
+  let busy=false, pending=null;
+  return async function(data){
+    pending=data; if(busy) return; busy=true;
+    while(pending){ const d=pending; pending=null;
+      try{ await getRef().set(d); }
+      catch(e){
+        if(e&&e.code==="invalid_argument"){ readOnly=true; setStatus("You can view this page but not save to it. Ask its owner for Contributor access.",true); pending=null; }
+        else if(e&&e.code==="unavailable"){ await new Promise(r=>setTimeout(r,800+Math.random()*800)); try{ await getRef().set(d); }catch{} }
+        else if(e&&e.code==="quota_exceeded"){ setStatus("Storage is full, so this change wasn’t saved.",true); }
+      }
+    }
+    busy=false;
+  };
+}
+let saveTimer=null, writeState=null, writeRatings=null;
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    if(storeMode==="db"&&!readOnly) writeState(snapshotState());
+    else { try{ localStorage.setItem(LKEY,JSON.stringify(snapshotState())); }catch{} }
+  },400);
+}
+function saveRatings(){
+  if(storeMode!=="db"||readOnly) return;
+  const scores={}; for(const [k,v] of Object.entries(myPiMap())) scores[k]=+v.toFixed(4);
+  writeRatings({scores, updatedAt:Date.now()});
+}
+const catalogWriters={}; let catalogSnap={};
+function ensureCatalog(slug,meta){
+  if(storeMode!=="db"||readOnly||!slug) return;
+  const m=meta||S.beers[slug]; if(!m) return;
+  const ex=catalogSnap[slug];
+  if(ex && String(ex.abv??"")===String(m.abv??"")) return;
+  catalogWriters[slug] ||= makeWriter(()=>db.collection("beers").doc(slug));
+  catalogWriters[slug]({name:String(m.name).slice(0,120), abv:m.abv===""?"":m.abv??""});
+}
+function addPour(p){
+  if(storeMode==="db"&&!readOnly){ poursCol.add(p).catch(e=>setStatus(e&&e.code==="quota_exceeded"?"Storage is full, so that pour wasn’t saved.":"That pour didn’t save. Try again.",true)); }
+  else { p.id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); pours.unshift(p); try{ localStorage.setItem(PKEY,JSON.stringify(pours)); }catch{} renderHistory(); }
+}
+function deletePour(id){
+  if(storeMode==="db"&&!readOnly){ poursCol.doc(id).delete().catch(()=>setStatus("That pour couldn’t be removed. Try again.",true)); }
+  else { pours=pours.filter(p=>p.id!==id); try{ localStorage.setItem(PKEY,JSON.stringify(pours)); }catch{} renderHistory(); }
+}
+function cleanScores(sc){ const o={}; if(sc&&typeof sc==="object") for(const [k,v] of Object.entries(sc)) if(typeof v==="number"&&Number.isFinite(v)) o[k]=clamp01(v); return o; }
+
+async function initStore(){
+  loadLocal(); syncInputs(); update(); renderHistory();
+  const c=window.claude;
+  if(!c||typeof c.use!=="function"){ setStatus("Saved in this browser."); return; }
+  let user=null;
+  try{ [db,user]=await Promise.all([c.use("db"),c.use("user")]); }catch{}
+  if(!db||!user){ setStatus("Saved in this browser."); return; }
+  try{ uid=await user.id(); }catch{}
+  if(!uid){ setStatus("Saved in this browser."); return; }
+  stateRef=db.doc(`data/users/${uid}/state`); poursCol=stateRef.collection("pours"); ratingsRef=db.doc(`ratings/${uid}`);
+  writeState=makeWriter(()=>stateRef); writeRatings=makeWriter(()=>ratingsRef);
+  let timedOut=false; const timer=new Promise(r=>setTimeout(()=>{timedOut=true;r(null)},10000));
+  let snap=null; try{ snap=await Promise.race([stateRef.get(),timer]); }catch{ snap=null; }
+  if(!snap){ setStatus(timedOut?"Couldn’t reach your saved rankings. Changes are kept in this browser for now.":"Saved in this browser.",timedOut); return; }
+  const localHad=Object.keys(S.beers).length>0||pours.length>0, localPours=pours.slice();
+  storeMode="db";
+  if(snap.exists){ mergeState(snap.data()); if(snap.data()?.tiers?.fine){ writeState(snapshotState()); saveRatings(); } }
+  else if(localHad){ writeState(snapshotState()); saveRatings(); localPours.forEach(p=>{ const {id,...rest}=p; poursCol.add(rest).catch(()=>{}); }); }
+  try{ const can=await user.can("data.write"); if(can===false){ readOnly=true; setStatus("You can view this page but not save to it. Ask its owner for Contributor access.",true); } else setStatus("Saved to your account."); }catch{ setStatus("Saved to your account."); }
+  syncInputs(); update(); if(!$("#rankings").hidden) renderRankings();
+  poursCol.onSnapshot(s=>{ pours=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.ts||0)-(a.ts||0)); renderHistory(); },()=>{});
+  db.collection("ratings").onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ if(d.id!==uid){ const sc=cleanScores(d.data()?.scores); if(Object.keys(sc).length) o[d.id]=sc; } }); others=o; update(); },()=>{});
+  db.collection("beers").onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ const v=d.data()||{}; if(typeof v.name==="string") o[d.id]={name:v.name.slice(0,120), abv:v.abv}; }); catalogSnap=o; catalog={...o}; update(); },()=>{});
+}
+
+/* ---------- boot ---------- */
+setupScoreInputs();
+go(location.hash.slice(1)||"score",false);
+initStore();
+</script>
+</body>
+</html>
