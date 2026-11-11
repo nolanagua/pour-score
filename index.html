@@ -70,6 +70,29 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(2.3rem,8vw,3.8rem)
 .tagline{margin:4px 0 0;color:var(--ink-2);font-size:.95rem}
 .status{font-size:.8rem;color:var(--ink-2);margin:2px 0 0}
 .status.warn{color:var(--bad)}
+/* pop after ranking a beer */
+.rank-pop{position:fixed;inset:0;z-index:45;display:grid;place-items:center;pointer-events:none;padding:20px}
+.rp-card{pointer-events:auto;cursor:pointer;background:var(--surface);border:1.5px solid var(--line);border-radius:22px;padding:24px 26px 22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.28);width:min(300px,100%);transform:scale(.6);opacity:0}
+.rank-pop.on .rp-card{animation:rpIn .45s cubic-bezier(.2,.9,.3,1.4) forwards}
+.rank-pop.out .rp-card{opacity:1;transform:none;animation:rpOut .25s ease forwards}
+@keyframes rpIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes rpOut{to{transform:scale(.92);opacity:0}}
+.rp-check{width:68px;height:68px;display:block;margin:0 auto 12px;overflow:visible}
+.rp-ring{fill:var(--amber);transform-origin:center;transform-box:fill-box}
+.rp-burst{fill:none;stroke:var(--amber);stroke-width:2.5;transform-origin:center;transform-box:fill-box;opacity:0}
+.rp-tick{fill:none;stroke:var(--on-amber);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40}
+.rank-pop.on .rp-ring{animation:ringPop .5s cubic-bezier(.2,.9,.3,1.5) both}
+.rank-pop.on .rp-burst{animation:burst .7s .2s ease-out both}
+.rank-pop.on .rp-tick{animation:tick .35s .28s ease-out forwards}
+.rank-pop.out .rp-tick{stroke-dashoffset:0}
+@keyframes ringPop{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes burst{0%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:scale(1.8)}}
+@keyframes tick{to{stroke-dashoffset:0}}
+.rp-title{font-family:var(--display);font-weight:800;font-size:2rem;line-height:1;margin:0}
+.rp-name{font-weight:600;font-size:1.05rem;margin:8px 0 0;overflow-wrap:anywhere}
+.rp-sub{color:var(--ink-2);margin:4px 0 0;font-size:.92rem}
+.rp-pi{font-family:var(--math);font-weight:600;color:var(--amber-ink)}
+@media (prefers-reduced-motion:reduce){.rank-pop .rp-card,.rank-pop.on .rp-card{animation:none;opacity:1;transform:none}.rank-pop .rp-tick{animation:none;stroke-dashoffset:0}.rank-pop .rp-ring,.rank-pop .rp-burst{animation:none}}
 .site-foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);text-align:center;font-size:.82rem;color:var(--ink-2)}
 .masthead-eq{font-family:var(--math);font-size:clamp(1.4rem,4vw,2.2rem);display:flex;align-items:center;gap:.3em}
 .masthead-eq i{font-style:italic}
@@ -96,13 +119,25 @@ nav.tabs .ic.sig{font-family:var(--math);font-size:1.45rem;line-height:1}
 @media (min-width:860px){.score-layout{grid-template-columns:minmax(0,1fr) 380px;align-items:start}.result{position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}}
 
 /* stepper */
-.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:18px}
+.steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:18px}
 .step{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:8px 8px 9px;text-align:left;cursor:pointer;min-height:62px;display:flex;flex-direction:column;gap:2px;min-width:0;transition:border-color .2s ease,box-shadow .25s ease}
 .step .sl{display:flex;align-items:baseline;gap:5px;font-weight:600;font-size:.9rem}
 .step .sl .m{color:var(--amber-ink);font-size:1.1rem}
 .step .sv{font-size:.76rem;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .step[aria-selected="true"]{border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--amber)}
-@media (max-width:520px){ .step .sl{font-size:.82rem} .step{padding:7px 6px} }
+@media (max-width:520px){ .steps{gap:4px} .step .sl{font-size:.74rem;gap:3px} .step .sl .m{font-size:.95rem} .step .sv{font-size:.66rem} .step{padding:6px 5px;min-height:56px} }
+.review-hero{display:grid;grid-template-columns:110px 1fr;gap:18px;align-items:center;margin:8px 0 4px}
+#revGlass svg{width:110px;height:165px;display:block}
+.big-log{width:100%;min-height:60px;font-size:1.15rem;border-radius:14px;margin-top:20px}
+.review-bar .pane-nav{margin:0;padding:0;border:0}
+.best-time{font-size:.92rem;color:var(--ink-2);margin:12px 0 0;padding:10px 12px;background:var(--surface);border:1.5px solid var(--line);border-left:4px solid var(--amber);border-radius:0 10px 10px 0}
+.best-time b{color:var(--ink)}
+.best-time:empty{display:none}
+@media (max-width:859px){
+  #paneLog{display:none}
+  body.on-review .strip .n,body.on-review .strip .v{display:none}
+  body.on-review #barNext{flex:1;min-height:56px;font-size:1.1rem;border-radius:14px}
+}
 
 .pane{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:20px}
 .pane h2,h2{font-family:var(--display);font-weight:600;font-size:1.7rem;line-height:1.1;margin:0 0 4px}
@@ -167,6 +202,10 @@ summary{cursor:pointer;font-weight:500;color:var(--ink-2)}
 .ch-title{font-family:var(--display);font-weight:600;font-size:1.6rem;margin:12px 0 0;line-height:1.1}
 .ch-sub{color:var(--ink-2);font-size:.92rem;margin:4px 0 18px}
 .cheers .btn{width:100%}
+#chClose{position:relative;overflow:hidden;transition:background-color .2s ease,color .2s ease}
+#chClose span{position:relative;z-index:1}
+#chClose.locked{background:var(--surface-2);color:var(--ink-2);opacity:1;cursor:default}
+.cheers-card:focus{outline:none}
 @media (prefers-reduced-motion:reduce){.cheers,.cheers-card,.crown{transition:none}.bubble{animation:none}}
 
 /* pace slider */
@@ -456,9 +495,14 @@ ol.ranked li::before{content:counter(r);font-family:var(--display);font-weight:8
             <input type="range" class="pace" id="pace" min="5" max="90" step="1" aria-describedby="paceOut">
             <div class="ticks" aria-hidden="true"><span>Quick</span><span>Steady</span><span>Slow sip</span></div>
             <p class="pace-out" id="paceOut"></p>
+            <p class="best-time" id="bestTime"></p>
           </div>
           <label class="check"><input type="checkbox" id="strength"> Count alcohol strength, with 5% as the baseline</label>
-          <div class="pane-nav"><button class="btn small secondary" data-prev>Back</button><button class="btn small" id="paneLog">Log this pour</button></div>
+          <div class="pane-nav"><button class="btn small secondary" data-prev>Back</button><button class="btn small" data-next>Next: review</button></div>
+        </div>
+
+        <div class="review-bar" data-pane="review" aria-label="Review" hidden>
+          <div class="pane-nav"><button class="btn small secondary" data-prev>Back</button><span></span></div>
         </div>
       </div>
 
@@ -506,21 +550,30 @@ ol.ranked li::before{content:counter(r);font-family:var(--display);font-weight:8
 </div>
 
 <div class="cheers" id="cheers" hidden role="dialog" aria-modal="true" aria-labelledby="chTitle">
-  <div class="cheers-card">
+  <div class="cheers-card" tabindex="-1">
     <div id="chGlass"></div>
     <p class="ch-num" id="chNum">0</p>
     <p class="ch-verdict" id="chVerdict"></p>
     <p class="ch-title" id="chTitle"></p>
     <p class="ch-sub" id="chSub"></p>
     <p class="ch-badge" id="chBadge" hidden></p>
-    <button class="btn" id="chClose">Cheers</button>
+    <button class="btn" id="chClose"><span>Cheers</span></button>
+  </div>
+</div>
+
+<div class="rank-pop" id="rankPop" hidden role="status" aria-live="polite">
+  <div class="rp-card" id="rpCard">
+    <svg class="rp-check" viewBox="0 0 52 52" aria-hidden="true"><circle class="rp-burst" cx="26" cy="26" r="24"/><circle class="rp-ring" cx="26" cy="26" r="24"/><path class="rp-tick" d="M15 27 l7.5 7.5 L38 19"/></svg>
+    <p class="rp-title">Ranked!</p>
+    <p class="rp-name" id="rpName"></p>
+    <p class="rp-sub" id="rpSub"></p>
   </div>
 </div>
 
 <div class="strip">
   <span class="n" id="barNum">–</span>
   <span class="v"><span id="barVerdict"></span><small id="barWorth"></small></span>
-  <button class="btn small" id="barLog">Log</button>
+  <button class="btn small" id="barNext">Next</button>
 </div>
 
 <script>
@@ -570,7 +623,7 @@ const TIERS = {
 const TIER_ORDER = ["fav","loved","liked","okay","disliked"];
 const TIER_COLORS = ["var(--amber)","color-mix(in srgb,var(--amber) 70%,var(--surface))","color-mix(in srgb,var(--amber) 42%,var(--surface))","color-mix(in srgb,var(--amber) 20%,var(--surface))","var(--line)"];
 const VERDICTS = [[150,"Great deal","good"],[110,"Good deal","good"],[90,"Fair price",""],[60,"A bit steep","bad"],[-Infinity,"Overpaid","bad"]];
-const STEPS = [["beer","Beer","Π"],["pour","Pour","V"],["price","Price","y"],["place","Place","T"],["pace","Pace","t"]];
+const STEPS = [["beer","Beer","Π"],["pour","Pour","V"],["price","Price","y"],["place","Place","T"],["pace","Pace","t"],["review","Review","β"]];
 
 /* ---------- state ---------- */
 const S = { beers:{}, tiers:{fav:[],loved:[],liked:[],okay:[],disliked:[]}, settings:{pace:30,tip:20,strength:false} };
@@ -764,17 +817,31 @@ function setupScoreInputs(){
   $("#serveOv").addEventListener("input",e=>{calc.serveOv=e.target.value; update();});
   $("#pace").addEventListener("input",e=>{S.settings.pace=+e.target.value; paceLive(); saveState(); scheduleUpdate();});
   $("#strength").addEventListener("change",e=>{S.settings.strength=e.target.checked; saveState(); update();});
-  ["#logBtn","#barLog","#paneLog"].forEach(id=>$(id).addEventListener("click",logPour));
+  $("#logBtn").addEventListener("click",logPour);
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-use-pace]"); if(!b) return; S.settings.pace=+b.dataset.usePace; $("#pace").value=S.settings.pace; paceLive(); saveState(); update(); });
+  $("#barNext").addEventListener("click",()=>{ if(step===STEPS[STEPS.length-1][0]) logPour(); else moveStep(1); });
   $("#piNote").addEventListener("click",e=>{ if(e.target.closest("[data-rank-now]")) startRankFromCalc(); });
   document.addEventListener("click",e=>{ const b=e.target.closest("[data-goto]"); if(b){ go(b.dataset.goto); window.scrollTo({top:0}); } });
   syncInputs(); showStep("beer");
+}
+function syncBarNext(){
+  const b=$("#barNext"); if(!b) return;
+  const last=step===STEPS[STEPS.length-1][0], r=lastResult, canLog=!!(r&&r.score!==null&&calc.name.trim());
+  const nextLabel=last?"":STEPS[STEPS.findIndex(s=>s[0]===step)+1][1];
+  b.textContent=last?"Log this pour":"Next";
+  b.setAttribute("aria-label",last?"Log this pour":`Next: ${nextLabel}`);
+  b.disabled=last&&!canLog;
+  b.title=last&&!canLog?"Add a beer name and price to log this pour":"";
 }
 function showStep(k){
   const pi=STEPS.findIndex(s=>s[0]===step), ni=STEPS.findIndex(s=>s[0]===k), changed=k!==step;
   step=k;
   document.querySelectorAll("[data-pane]").forEach(p=>p.hidden=p.dataset.pane!==k);
   document.querySelectorAll("[data-step]").forEach(b=>b.setAttribute("aria-selected",b.dataset.step===k?"true":"false"));
+  document.body.classList.toggle("on-review",k==="review");
+  if((k==="pace"||k==="review")&&changed) update();
   if(changed) animateIn(document.querySelector(`[data-pane="${k}"]`), ni>pi?"anim-r":"anim-l");
+  syncBarNext();
 }
 function moveStep(d){
   const i=STEPS.findIndex(s=>s[0]===step), j=Math.max(0,Math.min(STEPS.length-1,i+d));
@@ -826,12 +893,29 @@ function renderChart(r){
     <text x="${pl}" y="${H-6}">0 min</text><text x="${W-pr}" y="${H-6}" text-anchor="end">${Math.round(r.td)} min</text></svg>`;
   $("#legend").textContent=`Poured at ${Math.round(r.env.serve)}°F, finished at ${Math.round(end)}°F. The shaded band is the sweet spot for this beer, around ${r.ideal}°F.`;
 }
+function fbarFor(td,env,ideal){ const n=Math.max(20,Math.round(td)); let s=0; for(let i=0;i<n;i++) s+=fOf(tempAt((i+0.5)*td/n,env),ideal); return s/n; }
+function renderReview(r,vd){
+  const bt=$("#bestTime");
+  if(bt&&step==="pace"){
+    let best=3, bf=-1; for(let t=3;t<=120;t++){ const f=fbarFor(t,r.env,r.ideal); if(f>bf+1e-4){ bf=f; best=t; } }
+    const pace=Math.max(5,Math.min(90,Math.round(best*16/Math.max(1,r.V)))), sym='<span class="m">t<sub>d</sub>*</span>';
+    if(Math.abs(best-r.td)<=3||bf-r.fbar<0.02) bt.innerHTML=`${sym} Your pace is already about right for this beer’s temperature.`;
+    else if(best>=120) bt.innerHTML=`${sym} Take your time. This one keeps getting closer to its ideal temperature for over two hours (<span class="m ov">f</span> up to <b>${f2(bf)}</b>).`;
+    else bt.innerHTML=`${sym} Best drinking time: <b>about ${best} min</b>, which lifts <span class="m ov">f</span> from ${f2(r.fbar)} to <b>${f2(bf)}</b>. <button type="button" class="linkish" data-use-pace="${pace}">Use this pace</button>`;
+  }
+  const rg=$("#revGlass"); if(!rg) return;
+  mountGlass(rg,calc.glass); tweenLevel(rg, r.score===null?0:Math.min(r.score,200)/200, 0.07, 450);
+  $("#revNum").textContent = r.score===null?"–":Math.round(r.score);
+  const ve=$("#revVerdict"); ve.textContent=vd.t; ve.className="verdict "+vd.c;
+  $("#revWorth").textContent = r.score===null ? "" : r.breakEven>0.005 ? `Worth up to ${money(r.breakEven)} on the menu for you.` : "No price makes this an average deal for you.";
+}
 function summaries(r){
   $("#sv-beer").textContent = calc.name.trim() || "Not set";
   $("#sv-pour").textContent = `${r.V} oz`;
   $("#sv-price").textContent = money(r.price);
   $("#sv-place").textContent = SHORT_VENUE[calc.venue];
   $("#sv-pace").textContent = `${S.settings.pace} min`;
+  $("#sv-review").textContent = r.score===null ? "–" : `Score ${Math.round(r.score)}`;
 }
 let lastResult=null;
 function update(){
@@ -859,6 +943,7 @@ function update(){
     ["y","Cost",`with ${+S.settings.tip}% tip`,money(r.y)]
   ].map(([sy,a,b,c])=>`<li><span class="sym">${sy}</span><span>${a}${b?`<small>${esc(b)}</small>`:""}</span><span class="val">${c}</span></li>`).join("");
   $("#piNote").innerHTML=piNoteText(r);
+  renderReview(r,vd);
   const v=VENUES[calc.venue];
   $("#sunWrap").hidden=v.indoor;
   $("#envNote").innerHTML=`Room about ${Math.round(r.env.room)}°F, beer poured at about ${Math.round(r.env.serve)}°F.`;
@@ -868,7 +953,8 @@ function update(){
   $("#paceOut").textContent = r.V===16 ? `You’ll finish this one in about ${Math.round(r.td)} minutes.` : `At this pace, your ${r.V} oz pour takes about ${Math.round(r.td)} minutes.`;
   renderChart(r); summaries(r);
   const canLog=r.score!==null && calc.name.trim();
-  ["#logBtn","#barLog","#paneLog"].forEach(id=>{ $(id).disabled=!canLog; $(id).title=canLog?"":"Add a beer name and price to log this pour"; });
+  ["#logBtn"].forEach(id=>{ $(id).disabled=!canLog; $(id).title=canLog?"":"Add a beer name and price to log this pour"; });
+  syncBarNext();
   if(!$("#magic").hidden) renderWorked();
 }
 
@@ -881,7 +967,23 @@ function finishInsert(pos){
   S.beers[beer.slug]={name:beer.name, abv:beer.abv===""||beer.abv==null?"":num(beer.abv,"")};
   rank={stage:"done", beer};
   saveState(); saveRatings(); ensureCatalog(beer.slug); renderRankings(); update();
+  rankPop(beer);
 }
+let rpTimer=null, rpHide=null;
+function rankPop(beer){
+  const el=$("#rankPop"), pos=tierPos(beer.slug), pi=myPiMap()[beer.slug]; if(!el||!pos) return;
+  $("#rpName").textContent=titleCase(beer.name);
+  $("#rpSub").innerHTML=`#${pos.i+1} in “${TIERS[pos.t].label}”, <span class="rp-pi">Π = ${f2(pi)}</span>`;
+  clearTimeout(rpTimer); clearTimeout(rpHide);
+  el.classList.remove("on","out"); el.hidden=false; void el.offsetWidth; el.classList.add("on");
+  rpTimer=setTimeout(closeRankPop,2000);
+}
+function closeRankPop(){
+  const el=$("#rankPop"); if(!el||el.hidden) return;
+  clearTimeout(rpTimer); el.classList.remove("on"); el.classList.add("out");
+  rpHide=setTimeout(()=>{ el.hidden=true; el.classList.remove("out"); }, reduceMotion()?0:260);
+}
+document.addEventListener("click",e=>{ if(e.target.closest("#rpCard")) closeRankPop(); });
 function renderRankings(){
   const p=$("#rankPanel");
   const rkey=rank.stage+":"+(rank.lo??"")+":"+(rank.hi??""), animRank=lastRankKey!==null&&rkey!==lastRankKey; lastRankKey=rkey;
@@ -1141,8 +1243,11 @@ function logPour(){
   const count=pours.length+1;
   addPour(p);
   celebrate(p, r, count, newBadges);
+  // Start fresh so repeated taps can’t log the same beer twice
+  calc.name=""; calc.slug=""; calc.abv=""; $("#beerName").value=""; $("#beerAbv").value="";
+  showStep("beer"); syncBarNext();
 }
-let chTimer=null, chReturn=null;
+let chTimer=null, chReturn=null, chLocked=false, chUnlock=null;
 function countUp(el,to,ms){
   cancelAnimationFrame(el._raf);
   if(reduceMotion()){ el.textContent=to; return; }
@@ -1170,12 +1275,17 @@ function celebrate(p,r,count,newBadges=[]){
   const ms=reduceMotion()?0:1400;
   setTimeout(()=>{ tweenLevel(gl,fill,0.08,ms); countUp($("#chNum"),score,ms); },reduceMotion()?0:220);
   setTimeout(()=>{ cv.textContent=vd.t; if(p.score>=150) ov.classList.add("great"); if(newBadges.length) cb.classList.add("pop"); },ms+260);
-  $("#chClose").focus({preventScroll:true});
+  const cbtn=$("#chClose"), lockMs=reduceMotion()?900:ms+260;
+  chLocked=true; clearTimeout(chUnlock);
+  cbtn.disabled=true; cbtn.classList.remove("locked"); void cbtn.offsetWidth; cbtn.classList.add("locked"); cbtn.style.setProperty("--lock",lockMs+"ms");
+  cbtn.setAttribute("aria-label","Cheers, available in a moment");
+  ov.querySelector(".cheers-card").focus({preventScroll:true});
+  chUnlock=setTimeout(()=>{ chLocked=false; cbtn.disabled=false; cbtn.classList.remove("locked"); cbtn.removeAttribute("aria-label"); cbtn.focus({preventScroll:true}); },lockMs);
   clearTimeout(chTimer); chTimer=setTimeout(closeCheers,7000);
   $("#barVerdict").textContent="Logged";
 }
 function closeCheers(){
-  const ov=$("#cheers"); if(ov.hidden) return;
+  const ov=$("#cheers"); if(ov.hidden||chLocked) return;
   clearTimeout(chTimer); ov.classList.remove("on");
   setTimeout(()=>{ ov.hidden=true; ov.classList.remove("great"); update(); },reduceMotion()?0:200);
   if(chReturn&&document.contains(chReturn)) chReturn.focus({preventScroll:true});
